@@ -1,0 +1,20 @@
+CREATE TABLE teams (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE players (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    position VARCHAR(10) NOT NULL,
+    college VARCHAR(100) NOT NULL,
+    team_id INTEGER REFERENCES teams(id) ON DELETE SET NULL
+);
+
+CREATE TABLE draft_picks (
+    id SERIAL PRIMARY KEY,
+    team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+    player_id INTEGER REFERENCES players(id) ON DELETE CASCADE,
+    round INTEGER NOT NULL,
+    pick_number INTEGER NOT NULL
+);
