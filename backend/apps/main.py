@@ -98,3 +98,61 @@ def delete_draft_pick(draft_pick_id: int, db: Session = Depends(get_db)):
     if db_draft_pick is None:
         raise HTTPException(status_code=404, detail="Draft pick not found")
     return db_draft_pick
+
+@app.post("/mock_drafts", response_model=schemas.MockDraftBase)
+def create_mock_draft(mock_draft: schemas.MockDraftCreate, db: Session = Depends(get_db)):
+    return crud.create_mock_draft(db=db, mock_draft=mock_draft)
+
+@app.get("/mock_drafts/{mock_draft_id}", response_model=schemas.MockDraftBase)
+def get_mock_draft(mock_draft_id: int, db: Session = Depends(get_db)):
+    db_mock_draft = crud.get_mock_draft(db=db, mock_draft_id=mock_draft_id)
+    if db_mock_draft is None:
+        raise HTTPException(status_code=404, detail="Mock draft not found")
+    return db_mock_draft
+
+@app.get("/mock_drafts/", response_model=list[schemas.MockDraftBase])
+def get_mock_drafts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_mock_drafts(db=db, skip=skip, limit=limit)
+
+@app.put("/mock_drafts/{mock_draft_id}", response_model=schemas.MockDraftBase)
+def update_mock_draft(mock_draft_id: int, mock_draft: schemas.MockDraftUpdate, db: Session = Depends(get_db)):
+    db_mock_draft = crud.update_mock_draft(db=db, mock_draft_id=mock_draft_id, mock_draft=mock_draft)
+    if db_mock_draft is None:
+        raise HTTPException(status_code=404, detail="Mock draft not found")
+    return db_mock_draft
+
+@app.delete("/mock_drafts/{mock_draft_id}", response_model=schemas.MockDraftBase)
+def delete_mock_draft(mock_draft_id: int, db: Session = Depends(get_db)):
+    db_mock_draft = crud.delete_mock_draft(db=db, mock_draft_id=mock_draft_id)
+    if db_mock_draft is None:
+        raise HTTPException(status_code=404, detail="Mock draft not found")
+    return db_mock_draft
+
+@app.post("/mock_draft_picks", response_model=schemas.MockDraftPickBase)
+def create_mock_draft_pick(mock_draft_pick: schemas.MockDraftPickCreate, db: Session = Depends(get_db)):
+    return crud.create_mock_draft_pick(db=db, mock_draft_pick=mock_draft_pick)
+
+@app.get("/mock_draft_picks/{mock_draft_pick_id}", response_model=schemas.MockDraftPickBase)
+def get_mock_draft_pick(mock_draft_pick_id: int, db: Session = Depends(get_db)):
+    db_mock_draft_pick = crud.get_mock_draft_pick(db=db, mock_draft_pick_id=mock_draft_pick_id)
+    if db_mock_draft_pick is None:
+        raise HTTPException(status_code=404, detail="Mock draft pick not found")
+    return db_mock_draft_pick
+
+@app.get("/mock_draft_picks/", response_model=list[schemas.MockDraftPickBase])
+def get_mock_draft_picks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_mock_draft_picks(db=db, skip=skip, limit=limit)
+
+@app.put("/mock_draft_picks/{mock_draft_pick_id}", response_model=schemas.MockDraftPickBase)
+def update_mock_draft_pick(mock_draft_pick_id: int, mock_draft_pick: schemas.MockDraftPickUpdate, db: Session = Depends(get_db)):
+    db_mock_draft_pick = crud.update_mock_draft_pick(db=db, mock_draft_pick_id=mock_draft_pick_id, mock_draft_pick=mock_draft_pick)
+    if db_mock_draft_pick is None:
+        raise HTTPException(status_code=404, detail="Mock draft pick not found")
+    return db_mock_draft_pick
+
+@app.delete("/mock_draft_picks/{mock_draft_pick_id}", response_model=schemas.MockDraftPickBase)
+def delete_mock_draft_pick(mock_draft_pick_id: int, db: Session = Depends(get_db)):
+    db_mock_draft_pick = crud.delete_mock_draft_pick(db=db, mock_draft_pick_id=mock_draft_pick_id)
+    if db_mock_draft_pick is None:
+        raise HTTPException(status_code=404, detail="Mock draft pick not found")
+    return db_mock_draft_pick

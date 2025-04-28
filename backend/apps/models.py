@@ -11,14 +11,22 @@ class Player(Base):
     college = Column(String(100), nullable=False)
     year = Column(Integer, nullable=False)
 
-    drafted_pick = relationship("DraftPick", back_populates="player", uselist=False)
-
 class Team(Base):
     __tablename__ = "teams"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
-    position_needs = Column(ARRAY(String))
+    qb = Column(Integer, nullable=False)
+    rb = Column(Integer, nullable=False)
+    wr = Column(Integer, nullable=False)
+    te = Column(Integer, nullable=False)
+    ot = Column(Integer, nullable=False)
+    iol = Column(Integer, nullable=False)
+    de = Column(Integer, nullable=False)
+    dt = Column(Integer, nullable=False)
+    lb = Column(Integer, nullable=False)
+    cb = Column(Integer, nullable=False)
+    s = Column(Integer, nullable=False)
 
     draft_picks = relationship("DraftPick", foreign_keys="[DraftPick.current_team_id]", back_populates="current_team")
 
@@ -32,7 +40,29 @@ class DraftPick(Base):
 
     current_team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
     original_team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
-    player_id = Column(Integer, ForeignKey("players.id"))
+    previous_team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
 
     current_team = relationship("Team", foreign_keys=[current_team_id], back_populates="draft_picks")
-    player = relationship("Player", back_populates="drafted_pick", uselist=False)
+
+class MockDraft(Base):
+    __tablename__ = "mock_drafts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100))
+
+    mock_draft_picks = relationship("MockDraftPick", back_populates="mock_draft")
+
+class MockDraftPick(Base):
+    __tablename__ = "mock_draft_picks"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    mock_draft_id = Column(Integer, ForeignKey("mock_drafts.id"), nullable=False)
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+    team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
+    draft_pick_id = Column(Integer, ForeignKey("draft_picks.id"), nullable=False)
+
+    mock_draft = relationship("MockDraft", back_populates="mock_draft_picks")
+    player = relationship("Player")
+    team = relationship("Team")
+    draft_pick = relationship("DraftPick")

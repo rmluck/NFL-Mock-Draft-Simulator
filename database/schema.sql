@@ -9,7 +9,16 @@ CREATE TABLE players (
 CREATE TABLE teams (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    position_needs TEXT[]
+    qb INTEGER NOT NULL,
+    rb INTEGER NOT NULL,
+    wr INTEGER NOT NULL,
+    ot INTEGER NOT NULL,
+    iol INTEGER NOT NULL,
+    de INTEGER NOT NULL,
+    dt INTEGER NOT NULL,
+    lb INTEGER NOT NULL,
+    cb INTEGER NOT NULL,
+    s INTEGER NOT NULL
 );
 
 CREATE TABLE draft_picks (
@@ -19,5 +28,18 @@ CREATE TABLE draft_picks (
     year INTEGER NOT NULL,
     current_team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
     original_team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-    player_id INTEGER NULL REFERENCES players(id) ON DELETE CASCADE
+    previous_team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE
 );
+
+CREATE TABLE mock_drafts (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+)
+
+CREATE TABLE mock_draft_picks (
+    id SERIAL PRIMARY KEY,
+    mock_draft_id INTEGER REFERENCES mock_draft(id) ON DELETE CASCADE,
+    player_id INTEGER REFERENCES players(id) ON DELETE CASCADE,
+    team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
+    draft_pick_id INTEGER REFERENCES draft_picks(id) ON DELETE CASCADE
+)
