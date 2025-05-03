@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import models, crud, schemas
+from .apps import models, crud, schemas
 from .database import SessionLocal, engine
 
 app = FastAPI()
@@ -11,6 +11,10 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the NFL Mock Draft Simulator."}
 
 @app.post("/players/", response_model=schemas.PlayerBase)
 def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):

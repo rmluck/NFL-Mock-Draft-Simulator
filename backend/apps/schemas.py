@@ -9,6 +9,10 @@ class PlayerCreate(BaseModel):
 
 class PlayerBase(BaseModel):
     id: int
+    name: str
+    position: str
+    college: str
+    year: int
 
     class Config:
         orm_mode = True
@@ -35,6 +39,18 @@ class TeamCreate(BaseModel):
 
 class TeamBase(BaseModel):
     id: int
+    name: str
+    qb: int
+    rb: int
+    wr: int
+    te: int
+    ot: int
+    iol: int
+    de: int
+    dt: int
+    lb: int
+    cb: int
+    s: int
 
     class Config:
         orm_mode = True
@@ -63,6 +79,12 @@ class DraftPickCreate(BaseModel):
 
 class DraftPickBase(BaseModel):
     id: int
+    pick_number: int
+    round: int
+    year: int
+    current_team_id: int
+    original_team_id: int
+    previous_team_id: int
 
     class Config:
         orm_mode = True
@@ -76,11 +98,13 @@ class DraftPickUpdate(BaseModel):
     previous_team_id: Optional[int] = None
 
 class MockDraftCreate(BaseModel):
-    name: str
+    name: Optional[str] = "Mock Draft"
     num_rounds: int
 
 class MockDraftBase(BaseModel):
     id: int
+    name: str
+    num_rounds: int
 
     class Config:
         orm_mode = True
@@ -97,6 +121,10 @@ class MockDraftPickCreate(BaseModel):
 
 class MockDraftPickBase(BaseModel):
     id: int
+    mock_draft_id: int
+    player_id: int
+    team_id: int
+    draft_pick_id: int
 
     class Config:
         orm_mode = True
@@ -113,6 +141,8 @@ class UserControlledTeamCreate(BaseModel):
 
 class UserControlledTeamBase(BaseModel):
     id: int
+    mock_draft_id: int
+    team_id: int
 
     class Config:
         orm_mode = True

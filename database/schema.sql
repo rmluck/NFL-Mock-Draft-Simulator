@@ -33,7 +33,7 @@ CREATE TABLE draft_picks (
 
 CREATE TABLE mock_drafts (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
+    name VARCHAR(100) DEFAULT "Mock Draft",
     num_rounds INTEGER NOT NULL,
 )
 

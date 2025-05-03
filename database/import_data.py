@@ -1,6 +1,6 @@
 import csv, os
 from backend.apps.models import Team, Player, DraftPick
-from backend.apps.database import SessionLocal
+from backend.database import SessionLocal
 
 DATA_FOLDER = os.path.join(os.path.dirname(__file__), "2025")
 
