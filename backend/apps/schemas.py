@@ -77,6 +77,7 @@ class DraftPickUpdate(BaseModel):
 
 class MockDraftCreate(BaseModel):
     name: str
+    num_rounds: int
 
 class MockDraftBase(BaseModel):
     id: int
@@ -86,6 +87,7 @@ class MockDraftBase(BaseModel):
 
 class MockDraftUpdate(BaseModel):
     name: Optional[str] = None
+    num_rounds: Optional[str] = None
 
 class MockDraftPickCreate(BaseModel):
     mock_draft_id: int
@@ -104,3 +106,17 @@ class MockDraftPickUpdate(BaseModel):
     player_id: Optional[int] = None
     team_id: Optional[int] = None
     draft_pick_id: Optional[int] = None
+
+class UserControlledTeamCreate(BaseModel):
+    mock_draft_id: int
+    team_id: int
+
+class UserControlledTeamBase(BaseModel):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class UserControlledTeamUpdate(BaseModel):
+    mock_draft_id: Optional[int] = None
+    team_id: Optional[int] = None

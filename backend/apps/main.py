@@ -82,7 +82,7 @@ def get_draft_pick(draft_pick_id: int, db: Session = Depends(get_db)):
     return db_draft_pick
 
 @app.get("/draft_picks/", response_model=list[schemas.DraftPickBase])
-def get_draft_picks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_draft_picks(skip: int = 0, limit: int = 300, db: Session = Depends(get_db)):
     return crud.get_draft_picks(db=db, skip=skip, limit=limit)
 
 @app.put("/draft_picks/{draft_pick_id}", response_model=schemas.DraftPickBase)
@@ -139,9 +139,12 @@ def get_mock_draft_pick(mock_draft_pick_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Mock draft pick not found")
     return db_mock_draft_pick
 
-@app.get("/mock_draft_picks/", response_model=list[schemas.MockDraftPickBase])
-def get_mock_draft_picks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_mock_draft_picks(db=db, skip=skip, limit=limit)
+@app.get("/mock_draft_picks/{mock_draft_id}", response_model=list[schemas.MockDraftPickBase])
+def get_mock_draft_picks(mock_draft_id: int, skip: int = 0, limit: int = 300, db: Session = Depends(get_db)):
+    db_mock_draft_picks = crud.get_mock_draft_picks(db=db, mock_draft_id=mock_draft_id, skip=skip, limit=limit)
+    if db_mock_draft_picks is None:
+        raise HTTPException(status_code=404, detail="Mock draft not found or no picks have been made yet")
+    return db_mock_draft_picks
 
 @app.put("/mock_draft_picks/{mock_draft_pick_id}", response_model=schemas.MockDraftPickBase)
 def update_mock_draft_pick(mock_draft_pick_id: int, mock_draft_pick: schemas.MockDraftPickUpdate, db: Session = Depends(get_db)):
@@ -156,3 +159,28 @@ def delete_mock_draft_pick(mock_draft_pick_id: int, db: Session = Depends(get_db
     if db_mock_draft_pick is None:
         raise HTTPException(status_code=404, detail="Mock draft pick not found")
     return db_mock_draft_pick
+
+@app.post("/user_controlled_teams", response_model=schemas.UserControlledTeamBase)
+def create_user_controlled_team(user_controlled_team: schemas.UserControlledTeamCreate, db: Session = Depends(get_db)):
+    return crud.create_user_controlled_team(db=db, user_controlled_team=user_controlled_team)
+
+@app.get("/user_controlled_teams/{mock_draft_id}", response_model=list[schemas.UserControlledTeamBase])
+def get_user_controlled_teams(mock_draft_id: int, skip: int = 0, limit: int = 32, db: Session = Depends(get_db)):
+    db_user_controlled_teams = crud.get_user_controlled_teams(db=db, mock_draft_id=mock_draft_id, skip=skip, limit=limit)
+    if db_user_controlled_teams is None:
+        raise HTTPException(status_code=404, detail="Mock draft not found")
+    return db_user_controlled_teams
+
+@app.put("/user_controlled_teams/{user_controlled_team_id}", response_model=schemas.UserControlledTeamBase)
+def update_user_controlled_team(user_controlled_team_id: int, user_controlled_team: schemas.UserControlledTeamUpdate, db: Session = Depends(get_db)):
+    db_user_controlled_team = crud.update_user_controlled_team(db=db, user_controlled_team_id=user_controlled_team_id, user_controlled_team=user_controlled_team)
+    if db_user_controlled_team is None:
+        raise HTTPException(status_code=404, detail="User does not control this team")
+    return db_user_controlled_team
+
+@app.delete("/user_controlled_teams/{user_controlled_team_id}", response_model=schemas.UserControlledTeamBase)
+def delete_user_controlled_team(user_controlled_team_id: int, db: Session = Depends(get_db)):
+    db_user_controlled_team = crud.delete_user_controlled_team(db=db, user_controlled_team_id=user_controlled_team_id)
+    if db_user_controlled_team is None:
+        raise HTTPException(status_code=404, detail="User does not control this team")
+    return db_user_controlled_team

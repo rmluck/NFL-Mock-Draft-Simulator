@@ -49,6 +49,7 @@ class MockDraft(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100))
+    num_rounds = Column(Integer, nullable=False)
 
     mock_draft_picks = relationship("MockDraftPick", back_populates="mock_draft")
 
@@ -66,3 +67,11 @@ class MockDraftPick(Base):
     player = relationship("Player")
     team = relationship("Team")
     draft_pick = relationship("DraftPick")
+
+class UserControlledTeam(Base):
+    __tablename__ = "user_controlled_teams"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    mock_draft_id = Column(Integer, ForeignKey("mock_drafts.id"), nullable=False)
+    team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)

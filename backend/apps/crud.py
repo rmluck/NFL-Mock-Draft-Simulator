@@ -83,7 +83,7 @@ def create_draft_pick(db: Session, draft_pick: schemas.DraftPickCreate):
 def get_draft_pick(db: Session, draft_pick_id: int):
     return db.query(models.DraftPick).filter(models.DraftPick.id == draft_pick_id).first()
 
-def get_draft_picks(db: Session, skip: int = 0, limit: int = 100):
+def get_draft_picks(db: Session, skip: int = 0, limit: int = 300):
     return db.query(models.DraftPick).offset(skip).limit(limit).all()
 
 def update_draft_pick(db: Session, draft_pick_id: int, draft_pick: schemas.DraftPickUpdate):
@@ -108,7 +108,7 @@ def delete_draft_pick(db: Session, draft_pick_id: int):
     return None
 
 def create_mock_draft(db: Session, mock_draft: schemas.MockDraftCreate):
-    db_mock_draft = models.MockDraft(name=mock_draft.name)
+    db_mock_draft = models.MockDraft(name=mock_draft.name, num_rounds=mock_draft.num_rounds)
     db.add(db_mock_draft)
     db.commit()
     db.refresh(db_mock_draft)
@@ -124,6 +124,7 @@ def update_mock_draft(db: Session, mock_draft_id: int, mock_draft: schemas.MockD
     db_mock_draft = db.query(models.MockDraft).filter(models.MockDraft.id == mock_draft_id).first()
     if db_mock_draft:
         db_mock_draft.name = mock_draft.name
+        db_mock_draft.num_rounds = mock_draft.num_rounds
         db.commit()
         db.refresh(db_mock_draft)
     return db_mock_draft
@@ -146,8 +147,8 @@ def create_mock_draft_pick(db: Session, mock_draft_pick: schemas.MockDraftPickCr
 def get_mock_draft_pick(db: Session, mock_draft_pick_id: int):
     return db.query(models.MockDraftPick).filter(models.MockDraftPick.id == mock_draft_pick_id).first()
 
-def get_mock_draft_picks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.MockDraftPick).offset(skip).limit(limit).all()
+def get_mock_draft_picks(db: Session, mock_draft_id: int, skip: int = 0, limit: int = 300):
+    return db.query(models.MockDraftPick).filter(models.MockDraft.id == mock_draft_id).offset(skip).limit(limit).all()
 
 def update_mock_draft_pick(db: Session, mock_draft_pick_id: int, mock_draft_pick: schemas.MockDraftPickUpdate):
     db_mock_draft_pick = db.query(models.MockDraftPick).filter(models.MockDraftPick.id == mock_draft_pick_id).first()
@@ -166,4 +167,34 @@ def delete_mock_draft_pick(db: Session, mock_draft_pick_id: int):
         db.delete(db_mock_draft_pick)
         db.commit()
         return db_mock_draft_pick
+    return None
+
+def create_user_controlled_team(db: Session, user_controlled_team: schemas.UserControlledTeamCreate):
+    db_user_controlled_team = models.UserControlledTeam(mock_draft_id=user_controlled_team.mock_draft_id, team_id=user_controlled_team.team_id)
+    db.add(db_user_controlled_team)
+    db.commit()
+    db.refresh(db_user_controlled_team)
+    return db_user_controlled_team
+
+def get_user_controlled_team(db: Session, user_controlled_team_id: int):
+    return db.query(models.UserControlledTeam).filter(models.UserControlledTeam.id == user_controlled_team_id).first()
+
+def get_user_controlled_teams(db: Session, mock_draft_id: int, skip: int = 0, limit: int = 32):
+    return db.query(models.UserControlledTeam).filter(models.MockDraft.id == mock_draft_id).offset(skip).limit(limit).all()
+
+def update(db: Session, user_controlled_team_id: int, user_controlled_team: schemas.UserControlledTeamUpdate):
+    db_user_controlled_team = db.query(models.UserControlledTeam).filter(models.UserControlledTeam.id == user_controlled_team_id).first()
+    if db_user_controlled_team:
+        db_user_controlled_team.mock_draft_id = user_controlled_team.mock_draft_id
+        db_user_controlled_team.team_id = user_controlled_team.team_id
+        db.commit()
+        db.refresh(db_user_controlled_team)
+    return db_user_controlled_team
+
+def delete_user_controlled_team(db: Session, user_controlled_team_id: int):
+    db_user_controlled_team = db.query(models.UserControlledTeam).filter(models.UserControlledTeam.id == user_controlled_team_id).first()
+    if db_user_controlled_team:
+        db.delete(db_user_controlled_team)
+        db.commit()
+        return db_user_controlled_team
     return None

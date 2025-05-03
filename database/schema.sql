@@ -26,20 +26,27 @@ CREATE TABLE draft_picks (
     pick_number INTEGER NOT NULL,
     round INTEGER NOT NULL,
     year INTEGER NOT NULL,
-    current_team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-    original_team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-    previous_team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE
+    current_team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    original_team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    previous_team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE
 );
 
 CREATE TABLE mock_drafts (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100)
+    name VARCHAR(100),
+    num_rounds INTEGER NOT NULL,
 )
 
 CREATE TABLE mock_draft_picks (
     id SERIAL PRIMARY KEY,
-    mock_draft_id INTEGER REFERENCES mock_draft(id) ON DELETE CASCADE,
-    player_id INTEGER REFERENCES players(id) ON DELETE CASCADE,
-    team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-    draft_pick_id INTEGER REFERENCES draft_picks(id) ON DELETE CASCADE
+    mock_draft_id INTEGER NOT NULL REFERENCES mock_drafts(id) ON DELETE CASCADE,
+    player_id INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+    team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    draft_pick_id INTEGER NOT NULL REFERENCES draft_picks(id) ON DELETE CASCADE
+)
+
+CREATE TABLE user_controlled_teams (
+    id SERIAL PRIMARY KEY,
+    mock_draft_id INTEGER NOT NULL REFERENCES mock_drafts(id) ON DELETE CASCADE,
+    team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
 )
