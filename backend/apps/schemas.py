@@ -5,6 +5,7 @@ class PlayerCreate(BaseModel):
     name: str
     position: str
     college: str
+    rank: int
     year: int
 
 class PlayerBase(BaseModel):
@@ -12,6 +13,7 @@ class PlayerBase(BaseModel):
     name: str
     position: str
     college: str
+    rank: int
     year: int
 
     class Config:
@@ -21,6 +23,7 @@ class PlayerUpdate(BaseModel):
     name: Optional[str] = None
     position: Optional[str] = None
     college: Optional[str] = None
+    rank: Optional[int] = None
     year: Optional[int] = None
 
 class TeamCreate(BaseModel):

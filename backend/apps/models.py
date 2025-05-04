@@ -9,6 +9,7 @@ class Player(Base):
     name = Column(String(100), nullable=False)
     position = Column(String(10), nullable=False)
     college = Column(String(100), nullable=False)
+    rank = Column(Integer, nullable=False)
     year = Column(Integer, nullable=False)
 
 class Team(Base):

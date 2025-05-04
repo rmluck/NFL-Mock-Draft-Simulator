@@ -3,6 +3,7 @@ CREATE TABLE players (
     player_name VARCHAR(100) NOT NULL,
     position VARCHAR(10) NOT NULL,
     college VARCHAR(100) NOT NULL,
+    rank INTEGER NOT NULL,
     year INTEGER NOT NULL
 );
 

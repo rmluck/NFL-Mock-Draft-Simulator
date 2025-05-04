@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 def create_player(db: Session, player: schemas.PlayerCreate):
-    db_player = models.Player(name=player.name, position=player.position, college=player.college, year=player.year)
+    db_player = models.Player(name=player.name, position=player.position, college=player.college, rank=player.rank, year=player.year)
     db.add(db_player)
     db.commit()
     db.refresh(db_player)
@@ -20,6 +20,7 @@ def update_player(db: Session, player_id: int, player: schemas.PlayerUpdate):
         db_player.name = player.name
         db_player.position = player.position
         db_player.college = player.college
+        db_player.rank = player.rank
         db_player.year = player.year
         db.commit()
         db.refresh(db_player)

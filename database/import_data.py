@@ -13,6 +13,7 @@ with open(os.path.join(DATA_FOLDER, "players.csv"), newline="") as file:
             name=row["Name"],
             position=row["Position"],
             college=row["College"],
+            rank=row["Rank"],
             year=row["Year"]
         )
         session.add(player)
