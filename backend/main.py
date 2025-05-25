@@ -27,9 +27,9 @@ def get_player(player_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Player not found")
     return db_player
 
-@app.get("/players/", response_model=list[schemas.PlayerBase])
-def get_players(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_players(db=db, skip=skip, limit=limit)
+@app.get("/players/by_year/", response_model=list[schemas.PlayerBase])
+def get_players(year: int = 2025, db: Session = Depends(get_db)):
+    return crud.get_players(db=db, year=year)
 
 @app.put("/players/{player_id}", response_model=schemas.PlayerBase)
 def update_player(player_id: int, player: schemas.PlayerUpdate, db: Session = Depends(get_db)):
@@ -85,6 +85,10 @@ def get_draft_pick(draft_pick_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Draft pick not found")
     return db_draft_pick
 
+@app.get("/draft_picks/by_rounds/", response_model=list[schemas.DraftPickBase])
+def get_draft_picks_by_round(num_rounds: int = 7, db: Session = Depends(get_db)):
+    return crud.get_draft_picks_by_round(db=db, num_rounds=num_rounds)
+
 @app.get("/draft_picks/", response_model=list[schemas.DraftPickBase])
 def get_draft_picks(skip: int = 0, limit: int = 300, db: Session = Depends(get_db)):
     return crud.get_draft_picks(db=db, skip=skip, limit=limit)
@@ -136,7 +140,7 @@ def delete_mock_draft(mock_draft_id: int, db: Session = Depends(get_db)):
 def create_mock_draft_pick(mock_draft_pick: schemas.MockDraftPickCreate, db: Session = Depends(get_db)):
     return crud.create_mock_draft_pick(db=db, mock_draft_pick=mock_draft_pick)
 
-@app.get("/mock_draft_picks/{mock_draft_pick_id}", response_model=schemas.MockDraftPickBase)
+@app.get("/mock_draft_picks/mock_draft_pick/", response_model=schemas.MockDraftPickBase)
 def get_mock_draft_pick(mock_draft_pick_id: int, db: Session = Depends(get_db)):
     db_mock_draft_pick = crud.get_mock_draft_pick(db=db, mock_draft_pick_id=mock_draft_pick_id)
     if db_mock_draft_pick is None:

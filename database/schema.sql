@@ -36,12 +36,13 @@ CREATE TABLE mock_drafts (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) DEFAULT "Mock Draft",
     num_rounds INTEGER NOT NULL,
+    year INTEGER NOT NULL
 )
 
 CREATE TABLE mock_draft_picks (
     id SERIAL PRIMARY KEY,
     mock_draft_id INTEGER NOT NULL REFERENCES mock_drafts(id) ON DELETE CASCADE,
-    player_id INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+    player_id INTEGER NULL REFERENCES players(id) ON DELETE CASCADE,
     team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
     draft_pick_id INTEGER NOT NULL REFERENCES draft_picks(id) ON DELETE CASCADE
 )

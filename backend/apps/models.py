@@ -51,6 +51,7 @@ class MockDraft(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100))
     num_rounds = Column(Integer, nullable=False)
+    year = Column(Integer, nullable=False)
 
     mock_draft_picks = relationship("MockDraftPick", back_populates="mock_draft")
 
@@ -60,7 +61,7 @@ class MockDraftPick(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     mock_draft_id = Column(Integer, ForeignKey("mock_drafts.id"), nullable=False)
-    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
     draft_pick_id = Column(Integer, ForeignKey("draft_picks.id"), nullable=False)
 
