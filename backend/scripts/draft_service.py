@@ -127,7 +127,6 @@ def run_mock_draft():
     get_draft_picks(mock_draft_id, num_rounds)
     run_mock_draft_simulation(mock_draft_id, year)
 
-    # TODO: Step 4 - Begin draft simulation
     # TODO: Step 5 - Loop through picks and let user select player if they control that team
         # TODO: 5.1 - For current pick, display team that currently owns it
         # TODO: 5.2 - Display best players available

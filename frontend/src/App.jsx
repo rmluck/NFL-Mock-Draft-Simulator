@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 import Draft from "./pages/Draft";
 import TeamView from "./pages/TeamView";
 import PlayerProfile from "./pages/PlayerProfile";
