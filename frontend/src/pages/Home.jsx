@@ -3,25 +3,25 @@ import axios from "axios";
 
 function Home() {
     const [name, setName] = useState("");
-    const [num_rounds, set_num_rounds] = useState(1);
-    const [loading, set_loading] = useState(false);
-    const [draft, set_draft] = useState(null);
-    const [error, set_error] = useState("");
+    const [num_rounds, setNumRounds] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [draft, setDraft] = useState(null);
+    const [error, setError] = useState("");
 
     const handle_start_draft = async () => {
-        set_loading(true);
-        set_error("");
+        setLoading(true);
+        setError("");
 
         try {
             const result = await axios.post("http://localhost:8000/mock_drafts", {
                 name: name || "Mock Draft",
                 num_rounds: num_rounds
             });
-            set_draft(result.data);
+            setDraft(result.data);
         } catch (err) {
-            set_error("Failed to create mock draft.");
+            setError("Failed to create mock draft.");
         } finally {
-            set_loading(false);
+            setLoading(false);
         }
     };
 
@@ -37,7 +37,7 @@ function Home() {
 
             <label>
                 Number of Rounds:
-                <input type="number" value={num_rounds} onChange={(e) => set_num_rounds(parseInt(e.target.value))} min={1} max={7} />
+                <input type="number" value={num_rounds} onChange={(e) => setNumRounds(parseInt(e.target.value))} min={1} max={7} />
             </label>
             <br />
 
