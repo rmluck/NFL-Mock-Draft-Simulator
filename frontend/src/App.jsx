@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Draft from "./pages/Draft";
 import TeamView from "./pages/TeamView";
 import PlayerProfile from "./pages/PlayerProfile";
+import "./App.css";
 
 function App() {
   return (
