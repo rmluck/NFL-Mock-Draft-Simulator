@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Home() {
@@ -8,8 +9,8 @@ function Home() {
     const[teams, setTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [draft, setDraft] = useState(null);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTeams = async () => {
@@ -54,7 +55,7 @@ function Home() {
                 });
             }
 
-            setDraft(createdDraft);
+            navigate(`/draft/${createdDraft.id}`, { state: { createdDraft } });
         } catch (err) {
             setError("Failed to create mock draft.");
         } finally {
