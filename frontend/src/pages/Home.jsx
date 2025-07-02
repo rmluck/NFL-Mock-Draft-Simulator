@@ -3,7 +3,7 @@ import axios from "axios";
 
 function Home() {
     const [name, setName] = useState("");
-    const [num_rounds, setNumRounds] = useState(1);
+    const [numRounds, setNumRounds] = useState(1);
     const [year, setYear] = useState(2025);
     const[teams, setTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
@@ -35,14 +35,14 @@ function Home() {
         }
     };
 
-    const handle_start_draft = async () => {
+    const handleStartDraft = async () => {
         setLoading(true);
         setError("");
 
         try {
             const result = await axios.post("http://localhost:8000/mock_drafts", {
                 name: name || "Mock Draft",
-                num_rounds: num_rounds,
+                num_rounds: numRounds,
                 year: year
             });
             const createdDraft = result.data;
@@ -63,73 +63,77 @@ function Home() {
     };
 
     return (
-        <div className="home">
-            <h1>NFL Mock Draft Simulator</h1>
+        <div className="home_container">
+            <header className="home_header">
+                <img src="/site/main_logo.png" alt="NFL Mock Draft Simulator logo" id="main_logo" />
+            </header>
 
-            <div className="mock_draft_settings">
-                <h2>Mock Draft Settings</h2>
+            <main className="home_main">
+                <aside className="mock_draft_settings">
+                    <h2>Mock Draft Settings</h2>
 
-                <div class="name_settings">
-                    <label>
-                        Draft Name 
-                        <input id="name_input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Mock Draft"/>
+                    <p className="mock_draft_instructions">
+                        1. Select preferred draft settings
+                        <br />
+                        2. Pick teams to control as user
+                        <br />
+                        3. Simulate each draft pick
+                    </p>
+                    <br />
+
+                    <label class="draft_name">
+                        Draft Name
+                        <br />
+                        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Mock Draft" />
                     </label>
-                </div>
-                
 
-                <div class="year_settings">
-                    <label>
-                        Year 
-                        <select id="year_select" value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
+                    <label class="draft_year">
+                        Year
+                        <br />
+                        <select value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
                             <option value={2025}>2025</option>
                         </select>
                     </label>
-                </div>
-                
+                    <br />
 
-                <div class="num_rounds_settings">
-                    <label id="num_rounds_label"># of Rounds</label>
-                    {[1, 2, 3, 4, 5, 6, 7].map((round) => (
-                        <button class="num_rounds_buttons" key={round} onClick={() => setNumRounds(round)} style={{
-                            backgroundColor: num_rounds === round ? "#003049" : "#eee", color: num_rounds === round ? "#fff" : "#000"
-                        }}>{round}</button>
-                    ))}
-                </div>
+                    <label class="num_rounds">
+                        Number of Rounds
+                        <div className="num_rounds_selector">
+                            {[1, 2, 3, 4, 5, 6, 7].map((round) => (
+                                <button key={round} className={numRounds === round ? "selected" : ""} onClick={() => setNumRounds(round)}>
+                                    {round}
+                                </button>
+                            ))}
+                        </div>
+                    </label>
+                    <br />
 
-                <h3>Select Teams You Want to Control</h3>
-                <button id="select_all_button" onClick={handleSelectAll}>
-                    {selectedTeams.length === teams.length ? "Deselect All" : "Select All"}
-                </button>
+                    <button id="start_btn" onClick={handleStartDraft} disabled={loading}>
+                        {loading ? "Creating..." : "Start Draft"}
+                    </button>
 
-                <div class="select_teams_grid">
-                    {teams.map((team) => (
-                        <button class="select_team_buttons" key={team.id} onClick={() => handleToggleTeam(team.id)} style={{ backgroundColor: selectedTeams.includes(team.id) ? "#003049" : "#eee", color: selectedTeams.includes(team.id) ? "#fff" : "#000"}}>
-                            {team.name}
-                        </button>
-                    ))}
-                </div>
+                    {error && <p className="error">{error}</p>}
+                    {draft && <p className="success">Draft created! ID: {draft.id}, Name: {draft.name}</p>}
+                </aside>
 
-                <button id="start_draft_button" onClick={handle_start_draft} disabled={loading || selectedTeams.length === 0}>
-                    {loading ? "Creating..." : "Start Draft"}
-                </button>
+                <section className="team_selection">
+                    <h2>Select Teams to Control</h2>
+                    <button onClick={handleSelectAll} id="select_all_btn">
+                        {selectedTeams.length === teams.length ? "Deselect All" : "Select All"}
+                    </button>
 
-                {error && <p style={{ color: "red" }}>{error}</p>}
-                {draft && <p>Draft created! ID: {draft.id}, Name: {draft.name}</p>}
-            </div>
-
-            <div class="mock_draft_instructions">
-                <h2>Mock Draft Instructions</h2>
-
-                <ul>
-                    <li>Select your preferred draft settings on the left sidebar</li>
-                    <li>Pick the teams you want to control</li>
-                    <li>Simulate each pick round-by-round</li>
-                    <li>Make the picks for your teams</li>
-                </ul>
-
-                <h3>Ready to draft?</h3>
-                <p>Click "Start Draft" to begin your personalized NFL mock draft experience.</p>
-            </div>
+                    <div className="teams_grid">
+                        {teams.map((team) => (
+                            <button key={team.id} onClick={() => handleToggleTeam(team.id)} className={`team_btn ${selectedTeams.includes(team.id) ? "selected" : ""}`}>
+                                <div className="team_logo_wrapper">
+                                    <img src={`/logos/nfl/${team.name}.png`} alt={`${team.name} logo`} className="team_logo" />
+                                </div>
+                                <span className="team_name">{team.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </section>
+            </main>
         </div>
     );
 }
