@@ -81,13 +81,13 @@ function Home() {
                     </p>
                     <br />
 
-                    <label class="draft_name">
+                    <label className="draft_name">
                         Draft Name
                         <br />
                         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Mock Draft" />
                     </label>
 
-                    <label class="draft_year">
+                    <label className="draft_year">
                         Year
                         <br />
                         <select value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
@@ -96,7 +96,7 @@ function Home() {
                     </label>
                     <br />
 
-                    <label class="num_rounds">
+                    <label className="num_rounds">
                         Number of Rounds
                         <div className="num_rounds_selector">
                             {[1, 2, 3, 4, 5, 6, 7].map((round) => (
@@ -113,14 +113,15 @@ function Home() {
                     </button>
 
                     {error && <p className="error">{error}</p>}
-                    {draft && <p className="success">Draft created! ID: {draft.id}, Name: {draft.name}</p>}
                 </aside>
 
                 <section className="team_selection">
-                    <h2>Select Teams to Control</h2>
-                    <button onClick={handleSelectAll} id="select_all_btn">
-                        {selectedTeams.length === teams.length ? "Deselect All" : "Select All"}
-                    </button>
+                    <div className="teams_grid_header">
+                        <h2>Select Teams to Control</h2>
+                        <button onClick={handleSelectAll} id="select_all_btn">
+                            {selectedTeams.length === teams.length ? "Deselect All" : "Select All"}
+                        </button>
+                    </div>
 
                     <div className="teams_grid">
                         {teams.map((team) => (
