@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -15,7 +15,7 @@ function Home() {
     useEffect(() => {
         const fetchTeams = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/teams/");
+                const response = await axios.get(`/api/teams`);
                 setTeams(response.data);
             } catch (err) {
                 console.error("Failed to fetch teams");
@@ -41,7 +41,7 @@ function Home() {
         setError("");
 
         try {
-            const result = await axios.post("http://localhost:8000/mock_drafts", {
+            const result = await axios.post(`/api/mock_drafts`, {
                 name: name || "Mock Draft",
                 num_rounds: numRounds,
                 year: year
@@ -49,7 +49,7 @@ function Home() {
             const createdDraft = result.data;
 
             for (const teamId of selectedTeams) {
-                await axios.post("http://localhost:8000/user_controlled_teams", {
+                await axios.post(`/api/user_controlled_teams`, {
                     mock_draft_id: createdDraft.id,
                     team_id: teamId
                 });

@@ -10,7 +10,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/draft" element={<Draft />} />
+        <Route path="/draft/:draftId" element={<Draft />} />
         <Route path="/team/:teamId" element={<TeamView />} />
         <Route path="/player/:playerId" element={<PlayerProfile />} />
       </Routes>
