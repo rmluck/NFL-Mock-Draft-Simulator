@@ -8,6 +8,7 @@ function Home() {
     const [year, setYear] = useState(2025);
     const[teams, setTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
+    const [draftPicks, setDraftPicks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
@@ -52,6 +53,16 @@ function Home() {
                 await axios.post(`/api/user_controlled_teams`, {
                     mock_draft_id: createdDraft.id,
                     team_id: teamId
+                });
+            }
+
+            const retrieved_picks = await axios.get(`/api/draft_picks/by_rounds/`, { params: { num_rounds: numRounds } });
+
+            for (const pick of retrieved_picks.data) {
+                await axios.post(`/api/mock_draft_picks`, {
+                    mock_draft_id: createdDraft.id,
+                    draft_pick_id: pick.id,
+                    team_id: pick.current_team_id
                 });
             }
 

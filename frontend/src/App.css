@@ -27,8 +27,8 @@
 .home_header {
   background-color: var(--red);
   border-bottom: 6px solid var(--yellow);
-  height: 15vh;
   width: 100%;
+  height: 15vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,10 +88,15 @@
 .draft_name input {
   color: black;
   background-color: var(--gray);
-  border: 1px solid black;
-  border-radius: 3px;
+  border: 2px solid black;
+  border-radius: 0px;
+  box-shadow: 4px 4px 0 black;
   width: 100%;
   padding: 5px 0px 5px 5px;
+}
+
+.draft_name input::placeholder {
+  color: rgb(78, 77, 77);
 }
 
 .draft_year select {
@@ -140,10 +145,12 @@
 #start_btn {
   color: var(--gray);
   background-color: var(--blue);
-  border: 1px solid black;
-  border-radius: 4px;
+  border: 2px solid black;
+  border-radius: 0px;
+  box-shadow: 4px 4px 0 black;
   cursor: pointer;
   width: 100%;
+  transition: background-color 0.2s ease;
 }
 
 #start_btn:hover {
@@ -175,10 +182,12 @@
 #select_all_btn {
   color: var(--gray);
   background-color: var(--blue);
-  border: 1px solid black;
-  border-radius: 4px;
+  border: 2px solid black;
+  border-radius: 0px;
+  box-shadow: 4px 4px 0 black;
   margin: auto 10px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 #select_all_btn:hover {
@@ -253,6 +262,202 @@
 .error {
   color: red;
   margin-top: 10px;
+}
+
+/* Draft - Layout */
+
+.draft_container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.draft_header {
+  background-color: var(--red);
+  border-bottom: 6px solid var(--yellow);
+  height: 15vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+}
+
+#draft_logo {
+  height: 80%;
+}
+
+.draft_main {
+  width: 245%;
+  height: 85vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 20px;
+  margin-top: 15vh;
+}
+
+/* Draft - Picks */
+
+.draft_picks {
+  background-color: var(--yellow);
+  border: 2px solid black;
+  box-shadow: 6px 6px 0 black;
+  width: 79%;
+  height: 55%;
+  max-width: 100%;
+  display: flex;
+  gap: 12px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+}
+
+#on_the_clock {
+  color: black;
+  background-color: var(--orange);
+  font-weight: bold;
+  text-align: center;
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  height: 80px;
+  margin: -8px 10px 0px -12px;
+  padding: 3px 0px 3px 0px;
+}
+
+.draft_pick {
+  color: black;
+  background-color: var(--gray);
+  border: 1px solid black;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px 0 black;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  min-width: 250px;
+  padding: 0;
+}
+
+.pick_team_logo_wrapper {
+  background-color: var(--gray);
+  height: 100%;
+  display: flex;
+  flex: 0 0 70px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pick_team_logo {
+  height: 130%;
+  width: 100%;
+  margin-left: -10px;
+  object-fit: contain;
+}
+
+.pick_team_name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: left;
+  white-space: nowrap;
+  flex-grow: 1;
+  padding-left: 16px;
+}
+
+.draft_pick.picked .pick_label {
+  background-color: var(--blue);
+}
+
+.draft_pick.on_the_clock .pick_label {
+  color: var(--gray);
+  background-color: var(--green);
+}
+
+.draft_pick.future .pick_label {
+  background-color: var(--orange);
+}
+
+.pick_label {
+  font-size: 0.7rem;
+  font-weight: bold;
+  min-width: 30px;
+  height: 100%;
+  border-radius: 4px;
+  padding: 50px 8px 10px 8px;
+}
+
+/* Draft - Tools */
+
+.draft_tools {
+  color: black;
+  background-color: var(--yellow);
+  border: 2px solid black;
+  box-shadow: 6px 6px 0 black;
+  width: 10%;
+  height: 85%;
+  margin-top: 30px;
+  padding: 10px 20px 30px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.draft_tools h2 {
+  margin-bottom: 30px;
+}
+
+.draft_tool {
+  font-weight: bold;
+  color: var(--gray);
+  background-color: var(--blue);
+  border: 2px solid black;
+  border-radius: 0px;
+  box-shadow: 4px 4px 0 black;
+  width: 100%;
+  margin-bottom: 25px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.draft_tool:hover {
+  color: black;
+  background-color: var(--green);
+  border: 2px solid black;
+}
+
+/* Draft - Big Board */
+
+.big_board {
+  color: black;
+  background-color: var(--green);
+  border: 2px solid black;
+  box-shadow: 6px 6px 0 black;
+  width: 50%;
+  height: 85%;
+  flex-grow: 1;
+  margin-top: 30px;
+  padding: 20px;
+  overflow-y: scroll;
+}
+
+/* Draft - Team Profile */
+
+.team_profile {
+  color: black;
+  background-color: var(--orange);
+  border: 2px solid black;
+  box-shadow: 6px 6px 0 black;
+  width: 20%;
+  height: 85%;
+  margin-top: 30px;
+  padding: 10px 20px 30px;
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 /* TEMPLATE STYLING */
