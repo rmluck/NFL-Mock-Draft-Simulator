@@ -339,13 +339,12 @@
   height: 60px;
   display: flex;
   align-items: center;
-  overflow: hidden;
-  min-width: 250px;
+  overflow: visible;
+  min-width: 300px;
   padding: 0;
 }
 
 .pick_team_logo_wrapper {
-  background-color: var(--gray);
   height: 100%;
   display: flex;
   flex: 0 0 70px;
@@ -386,10 +385,29 @@
 .pick_label {
   font-size: 0.7rem;
   font-weight: bold;
+  border: 2px solid black;
+  box-shadow: 3px 3px 0 black;
   min-width: 30px;
-  height: 100%;
-  border-radius: 4px;
-  padding: 50px 8px 10px 8px;
+  height: 15px;
+  padding: 5px 8px 8px 8px;
+  position: relative;
+  top: 20px;
+  left: 5px;
+  text-align: center;
+}
+
+.user_controlled_team_label {
+  font-size: 0.7rem;
+  color: white;
+  background-color: var(--blue);
+  border: 2px solid black;
+  box-shadow: 3px 3px 0 black;
+  min-width: 50px;
+  height: 15px;
+  padding: 5px 0px 8px 0px;
+  position: absolute;
+  right: 50px;
+  bottom: -2px;
 }
 
 /* Draft - Tools */
@@ -416,7 +434,6 @@
   color: var(--gray);
   background-color: var(--blue);
   border: 2px solid black;
-  border-radius: 0px;
   box-shadow: 4px 4px 0 black;
   width: 100%;
   margin-bottom: 25px;
@@ -428,6 +445,22 @@
   color: black;
   background-color: var(--green);
   border: 2px solid black;
+}
+
+.draft_details {
+  background-color: var(--red);
+  border: 2px solid black;
+  box-shadow: 4px 4px 0 black;
+  line-height: 0.3;
+  text-align: left;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.draft_details h3 {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 15px;
 }
 
 /* Draft - Big Board */

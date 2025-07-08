@@ -7,6 +7,8 @@ function Draft() {
     const location = useLocation();
     const [draft, setDraft] = useState(location.state?.createdDraft || null);
     const [picks, setPicks] = useState([]);
+    const [userControlledTeams, setUserControlledTeams] = useState([]);
+    const [players, setPlayers] = useState([]);
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -15,9 +17,6 @@ function Draft() {
                     const draft_result = await axios.get(`/api/mock_drafts/${draftId}`);
                     setDraft(draft_result.data);
                 }
-
-                const picks_result = await axios.get(`/api/mock_draft_picks/${draftId}`);
-                setPicks(picks_result.data);
             } catch (err) {
                 console.error("Failed to load draft:", err);
             }
@@ -25,13 +24,33 @@ function Draft() {
         fetchDraft();
     }, [draftId]);
 
+    useEffect(() => {
+        const fetchRest = async() => {
+            try {
+                if (!draft) return;
+
+                const picks_result = await axios.get(`/api/mock_draft_picks/${draftId}`);
+                setPicks(picks_result.data);
+
+                const user_controlled_teams_result = await axios.get(`/api/user_controlled_teams/${draftId}`);
+                setUserControlledTeams(user_controlled_teams_result.data.map(team => team.team_id));
+
+                const players_result = await axios.get(`/api/players/by_year/`, { params: { year: draft.year } });
+                setPlayers(players_result.data);
+            } catch (err) {
+                console.error("Failed to fetch additional data:", err);
+            }
+        };
+        fetchRest();
+    }, [draft]);
+
     if (!draft) {
         return <div>Loading draft...</div>;
     }
 
     const currentPickIndex = picks.findIndex(pick => !pick.player);
+    const sortedPlayers = [...players].sort((a, b) => a.rank - b.rank);
 
-    console.log("Picks:", picks);
     return (
         <div className="draft_container">
             <header className="draft_header">
@@ -50,6 +69,7 @@ function Draft() {
                                     <div className="pick_selected_player">{pick.player_id.name}</div>
                             )} */}
                             <div className="pick_label">
+                                {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
                                 <small>
                                     {pick.draft_pick.round}.{pick.draft_pick.pick_number}
                                 </small>
@@ -71,11 +91,35 @@ function Draft() {
                     <br />
                     <button className="draft_tool">Restart Draft</button>
                     <br />
+                    <div className="draft_details">
+                        <h3>Details</h3>
+                        <br />
+                        <p><strong>Name</strong></p>
+                        <p>{draft.name}</p>
+                        <br />
+                        <p><strong>Year</strong></p>
+                        <p>{draft.year}</p>
+                        <br />
+                        <p><strong>Rounds:</strong></p>
+                        <p>{draft.num_rounds}</p>
+                        <br />
+                    </div>
                     {/* Include buttons for Undo Pick, Trade Pick, Pause Draft, Restart Draft, etc. */}
                 </aside>
 
                 <section className="big_board">
                     <h2>Big Board</h2>
+                    <div className="players">
+                        {sortedPlayers.map(player => (
+                            <div key={player.id} className="player">
+                                <div className="player_college_logo_wrapper">
+                                    <img src={`/logos/college/${player.college}.png`} alt={player.college} className="player_college_logo" />
+                                </div>
+                                <span className="player_name">{player.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                    
                     {/* Include vertically scrollable list of all players available in individual boxes, each with college logo, player name, position, college name, and button to pick player with current pick */}
                     {/* Also have filter and search buttons at top of section */}
                 </section>
