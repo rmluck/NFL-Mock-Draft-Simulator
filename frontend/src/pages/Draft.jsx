@@ -100,7 +100,7 @@ function Draft() {
                         <p><strong>Year</strong></p>
                         <p>{draft.year}</p>
                         <br />
-                        <p><strong>Rounds:</strong></p>
+                        <p><strong>Rounds</strong></p>
                         <p>{draft.num_rounds}</p>
                         <br />
                     </div>
@@ -108,14 +108,22 @@ function Draft() {
                 </aside>
 
                 <section className="big_board">
-                    <h2>Big Board</h2>
+                    <div className="big_board_header">
+                        <h2>Big Board</h2>
+                    </div>
                     <div className="players">
                         {sortedPlayers.map(player => (
                             <div key={player.id} className="player">
                                 <div className="player_college_logo_wrapper">
-                                    <img src={`/logos/college/${player.college}.png`} alt={player.college} className="player_college_logo" />
+                                    <img src={`/logos/college/${player.college.replaceAll(" ", "_")}.png`} alt={player.college} className="player_college_logo" />
                                 </div>
-                                <span className="player_name">{player.name}</span>
+                                <div className="player_details">
+                                    <span className="player_name">{player.name}</span>
+                                    <span className="player_background">{player.position} - {player.college}</span>
+                                </div>
+                                <div className="player_rank">
+                                    <small>{player.rank}</small>
+                                </div>
                             </div>
                         ))}
                     </div>

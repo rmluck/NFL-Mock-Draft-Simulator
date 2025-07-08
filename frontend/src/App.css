@@ -267,6 +267,7 @@
 /* Draft - Layout */
 
 .draft_container {
+  width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -290,7 +291,6 @@
 }
 
 .draft_main {
-  width: 245%;
   height: 85vh;
   display: flex;
   align-items: flex-start;
@@ -333,9 +333,9 @@
 .draft_pick {
   color: black;
   background-color: var(--gray);
-  border: 1px solid black;
+  border: 2px solid black;
   border-radius: 8px;
-  box-shadow: 2px 2px 4px 0 black;
+  box-shadow: 3px 3px 0 black;
   height: 60px;
   display: flex;
   align-items: center;
@@ -417,7 +417,7 @@
   background-color: var(--yellow);
   border: 2px solid black;
   box-shadow: 6px 6px 0 black;
-  width: 10%;
+  width: 20%;
   height: 85%;
   margin-top: 30px;
   padding: 10px 20px 30px;
@@ -471,11 +471,92 @@
   border: 2px solid black;
   box-shadow: 6px 6px 0 black;
   width: 50%;
-  height: 85%;
+  height: 91%;
+  display: flex;
   flex-grow: 1;
+  flex-direction: column;
   margin-top: 30px;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.big_board_header {
+  border-bottom: 2px solid black;
+  padding-top: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.players {
+  overflow-y: auto;
   padding: 20px;
-  overflow-y: scroll;
+  flex-grow: 1;
+}
+
+.player {
+  color: black;
+  background-color: var(--gray);
+  border: 2px solid black;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 black;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0;
+}
+
+.player_college_logo_wrapper {
+  height: 100%;
+  display: flex;
+  flex: 0 0 70px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.player_college_logo {
+  height: 130%;
+  width: 100%;
+  margin-left: -10px;
+  object-fit: contain;
+}
+
+.player_details {
+  text-align: left;
+  flex-grow: 1;
+
+}
+
+.player_name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: left;
+  white-space: nowrap;
+  padding-left: 16px;
+  margin-right: 10px;
+}
+
+.player_background {
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.player_rank {
+  font-size: 0.7rem;
+  font-weight: bold;
+  background-color: var(--red);
+  border: 2px solid black;
+  min-width: 15px;
+  height: 10px;
+  padding: 3px 8px 8px 8px;
+  position: relative;
+  bottom: 25px;
+  left: 10px;
+  text-align: center;
 }
 
 /* Draft - Team Profile */
