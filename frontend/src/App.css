@@ -302,32 +302,46 @@
 
 /* Draft - Picks */
 
-.draft_picks {
+.draft_picks_wrapper {
   background-color: var(--yellow);
   border: 2px solid black;
   box-shadow: 6px 6px 0 black;
-  width: 79%;
-  height: 55%;
-  max-width: 100%;
+  width: 78%;
+  height: 65%;
   display: flex;
-  gap: 12px;
-  padding: 8px 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
+  align-items: center;
+  padding-left: 50px;
+  padding-top: 12px;
+  position: relative;
+  overflow: hidden;
 }
 
 #on_the_clock {
   color: black;
   background-color: var(--orange);
+  border-left: 4px solid black;
   font-weight: bold;
   text-align: center;
   writing-mode: vertical-rl;
   text-orientation: sideways;
-  transform: rotate(180deg);
-  height: 80px;
-  margin: -8px 10px 0px -12px;
-  padding: 3px 0px 3px 0px;
+  transform: rotate(-180deg);
+  height: 90px;
+  padding: 3px 0;
+  position: absolute;
+  left: -16px;
+  top: 0;
+  z-index: 5;
+}
+
+.draft_picks {
+  height: 100%;
+  max-width: 100%;
+  display: flex;
+  gap: 15px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
 }
 
 .draft_pick {
@@ -482,7 +496,7 @@
 }
 
 .big_board_header {
-  border-bottom: 2px solid black;
+  border-bottom: 6px solid black;
   padding-top: 10px;
   position: sticky;
   top: 0;
@@ -505,7 +519,7 @@
   height: 60px;
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 23px;
   padding: 0;
 }
 
@@ -528,7 +542,6 @@
 .player_details {
   text-align: left;
   flex-grow: 1;
-
 }
 
 .player_name {
@@ -543,6 +556,8 @@
 .player_background {
   font-size: 0.9rem;
   text-align: center;
+  position: relative;
+  bottom: 1px;
 }
 
 .player_rank {
@@ -555,8 +570,30 @@
   padding: 3px 8px 8px 8px;
   position: relative;
   bottom: 25px;
-  left: 10px;
+  left: 85px;
   text-align: center;
+}
+
+.select_player {
+  font-size: 0.8rem;
+  position: relative;
+  top: 16px;
+  left: 3px;
+}
+
+.select_player_btn {
+  font-weight: bold;
+  color: white;
+  background-color: var(--blue);
+  border: 2px solid black;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.select_player_btn:hover {
+  color: black;
+  background-color: var(--green);
+  border: 2px solid black;
 }
 
 /* Draft - Team Profile */

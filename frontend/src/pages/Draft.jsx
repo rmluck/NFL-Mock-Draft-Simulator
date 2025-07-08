@@ -51,31 +51,33 @@ function Draft() {
     const currentPickIndex = picks.findIndex(pick => !pick.player);
     const sortedPlayers = [...players].sort((a, b) => a.rank - b.rank);
 
+    console.log("Sorted Players:", sortedPlayers);
     return (
         <div className="draft_container">
             <header className="draft_header">
                 <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="draft_logo" />
                 
-                <div className="draft_picks">
+                <div className="draft_picks_wrapper">
                     <p id="on_the_clock">On the Clock</p>
-                    
-                    {picks.map((pick, index) => (
-                        <div key={index} className={`draft_pick ${pick.player ? "picked" : index === currentPickIndex ? "on_the_clock" : "future"}`}>
-                            <div className="pick_team_logo_wrapper">
-                                <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
+                    <div className="draft_picks">
+                        {picks.map((pick, index) => (
+                            <div key={index} className={`draft_pick ${pick.player ? "picked" : index === currentPickIndex ? "on_the_clock" : "future"}`}>
+                                <div className="pick_team_logo_wrapper">
+                                    <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
+                                </div>
+                                <span className="pick_team_name">{pick.team.name}</span>
+                                {/* {pick.player && (
+                                        <div className="pick_selected_player">{pick.player_id.name}</div>
+                                )} */}
+                                <div className="pick_label">
+                                    {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
+                                    <small>
+                                        {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                    </small>
+                                </div>
                             </div>
-                            <span className="pick_team_name">{pick.team.name}</span>
-                            {/* {pick.player && (
-                                    <div className="pick_selected_player">{pick.player_id.name}</div>
-                            )} */}
-                            <div className="pick_label">
-                                {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
-                                <small>
-                                    {pick.draft_pick.round}.{pick.draft_pick.pick_number}
-                                </small>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
                 {/* For rest of header, include horizontally scrollable list of all upcoming draft picks as little boxes that include team assigned to draft pick with team logo, pick number and round. The list will shift to the left when a pick is made to make sure that the team on the clock is the leftmost box that is visible (scrolling right will show picks in the near/distant future, scrolling left will show picks in the past that have been made with their assigned player*/}
             </header>
@@ -123,6 +125,9 @@ function Draft() {
                                 </div>
                                 <div className="player_rank">
                                     <small>{player.rank}</small>
+                                </div>
+                                <div className="select_player">
+                                    <button className="select_player_btn">Select</button>
                                 </div>
                             </div>
                         ))}
