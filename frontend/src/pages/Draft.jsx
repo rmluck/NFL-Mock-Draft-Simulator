@@ -11,6 +11,9 @@ function Draft() {
     const [userControlledTeams, setUserControlledTeams] = useState([]);
     const [players, setPlayers] = useState([]);
     const [positionFilter, setPositionFilter] = useState({value: "ALL", label: "ALL"});
+    const [searchQuery, setSearchQuery] = useState("");
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [isSearchHovered, setIsSearchHovered] = useState(false);
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -68,7 +71,7 @@ function Draft() {
         {value: "K", label: "K"},
         {value: "P", label: "P"},
     ];
-    const filteredPlayers = [...players].filter(player => positionFilter.value === "ALL" || player.position === positionFilter.value).sort((a, b) => a.rank - b.rank);
+    const filteredPlayers = [...players].filter(player => (positionFilter.value === "ALL" || player.position === positionFilter.value) && player.name.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => a.rank - b.rank);
     const positionFilterStyles = {
         control: (base) => ({
             ...base,
@@ -78,7 +81,10 @@ function Draft() {
             borderRadius: '8px',
             boxShadow:'4px 4px 0 black',
             minHeight: '36px',
-            fontSize: '0.9rem'
+            fontSize: '0.9rem',
+            '&hover': {
+                borderColor: 'black'
+            }
         }), 
         menu: (base) => ({
             ...base,
@@ -155,7 +161,7 @@ function Draft() {
                         ))}
                     </div>
                 </div>
-                {/* For rest of header, include horizontally scrollable list of all upcoming draft picks as little boxes that include team assigned to draft pick with team logo, pick number and round. The list will shift to the left when a pick is made to make sure that the team on the clock is the leftmost box that is visible (scrolling right will show picks in the near/distant future, scrolling left will show picks in the past that have been made with their assigned player*/}
+                {/* The list will shift to the left when a pick is made to make sure that the team on the clock is the leftmost box that is visible (scrolling right will show picks in the near/distant future, scrolling left will show picks in the past that have been made with their assigned player*/}
             </header>
 
             <main className="draft_main">
@@ -186,8 +192,15 @@ function Draft() {
 
                 <section className="big_board">
                     <div className="big_board_header">
-                        <h2>Big Board</h2>
-                        <Select className="position_filter" options={positionOptions} value={positionFilter} onChange={setPositionFilter} isSearchable={false} styles={positionFilterStyles} theme={positionFilterTheme} />
+                        <div className="big_board_left">
+                            <Select className="position_filter" options={positionOptions} value={positionFilter} onChange={setPositionFilter} isSearchable={false} styles={positionFilterStyles} theme={positionFilterTheme} />
+                        </div>
+                        <div className="big_board_center">
+                            <h2>Big Board</h2>
+                        </div>
+                        <div className="big_board_right">
+                            <input type="text" placeholder={isSearchFocused || isSearchHovered ? "Search player name" : "Search"}className="player_search_input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setIsSearchFocused(true)} onBlur={() => setIsSearchFocused(false)} onMouseEnter={() => setIsSearchHovered(true)} onMouseLeave={() => setIsSearchHovered(false)} />
+                        </div>
                     </div>
                     <div className="players">
                         {filteredPlayers.map(player => (
@@ -208,7 +221,6 @@ function Draft() {
                             </div>
                         ))}
                     </div>
-                    {/* Also have filter and search buttons at top of section */}
                 </section>
 
                 <aside className="team_profile">
