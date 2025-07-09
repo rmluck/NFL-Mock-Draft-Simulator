@@ -200,20 +200,20 @@
   background-color: var(--green);
 }
 
-.teams_grid_header {
+.team_selection_grid_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.teams_grid {
+.team_selection_grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
-.team_btn {
+.select_team_btn {
   color: black;
   background-color: var(--gray);
   border: 1px solid black;
@@ -228,12 +228,12 @@
   transition: transform 0.2s;
 }
 
-.team_btn:hover {
+.select_team_btn:hover {
   border-color: var(--green);
   transform: scale(1.02);
 }
 
-.team_logo_wrapper {
+.select_team_logo_wrapper {
   background-color: var(--gray);
   height: 100%;
   display: flex;
@@ -243,19 +243,19 @@
   overflow: hidden;
 }
 
-.team_btn.selected, .team_btn.selected .team_logo_wrapper {
+.select_team_btn.selected, .select_team_btn.selected .select_team_logo_wrapper {
   background-color: var(--green);
   color: var(--gray);
 }
 
-.team_logo {
+.select_team_logo {
   height: 130%;
   width: 100%;
   margin-left: -10px;
   object-fit: contain;
 }
 
-.team_name {
+.select_team_name {
   font-size: 1.1rem;
   font-weight: bold;
   text-align: left;
@@ -668,6 +668,88 @@
   padding: 10px 20px 30px;
   overflow-y: auto;
   flex-shrink: 0;
+}
+
+.team_profile_header {
+  /* border: 2px solid black;
+  box-shadow: 4px 4px 0 black; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+}
+
+.team_profile_logo_wrapper {
+  display: flex;
+  flex: 0 0 70px;
+  align-items: center;
+  justify-content: center;
+}
+
+.team_profile_logo {
+  width: 120%;
+  margin-right: 25px;
+  object-fit: contain;
+}
+
+.team_positional_needs_grid {
+  background-color: var(--light-orange);
+  border: 2px solid black;
+  box-shadow: 4px 4px 0 black;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 10px 10px 6px;
+}
+
+.team_positional_needs_header {
+  margin: 0;
+}
+
+.position_box {
+  font-size: 0.75rem;
+  border: 2px solid black;
+  border-radius: 4px;
+  box-shadow: 3px 3px 0 black;
+  text-align: center;
+  width: 100%;
+  max-width: 25px;
+  max-height: 40px;
+  padding: 6px;
+}
+
+.positional_needs_row {
+  display: grid;
+  gap: 8px;
+}
+
+.offensive_need {
+  grid-template-columns: repeat(6, 1fr);
+  justify-content: center;
+}
+
+.defensive_need {
+  grid-template-columns: repeat(6, 1fr);
+  justify-content: center;
+  position: relative;
+  left: 25px;
+}
+
+.position_label {
+  font-weight: bold;
+  color: white;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.position_value {
+  font-weight: bold;
+  color: black;
+}
+
+.position_box.invisible_position_box {
+  visibility: hidden;
 }
 
 /* TEMPLATE STYLING */

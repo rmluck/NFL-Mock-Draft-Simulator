@@ -54,6 +54,8 @@ function Draft() {
     }
 
     const currentPickIndex = picks.findIndex(pick => !pick.player);
+    const currentPick = currentPickIndex !== -1 ? picks[currentPickIndex] : null;
+    const currentTeam = currentPick ? currentPick.team : null;
 
     const positionOptions = [
         {value: "ALL", label: "ALL"}, 
@@ -68,10 +70,26 @@ function Draft() {
         {value: "LB", label: "LB"},
         {value: "CB", label: "CB"},
         {value: "S", label: "S"},
-        {value: "K", label: "K"},
-        {value: "P", label: "P"},
     ];
+
     const filteredPlayers = [...players].filter(player => (positionFilter.value === "ALL" || player.position === positionFilter.value) && player.name.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => a.rank - b.rank);
+    
+    const teamPositionalNeeds = currentTeam ? Object.entries(currentTeam).filter(([key, value]) => key !== "name" && key !== "id") : [];
+
+    const getPositionUrgencyColor = (value) => {
+        if (value >= 10) return '#9E1111';
+        if (value === 9) return '#BA2626';
+        if (value === 8) return '#C55555';
+        if (value === 7) return '#E57373';
+        if (value === 6) return '#F28B82';
+        if (value === 5) return '#FAA199';
+        if (value === 4) return '#A4CEAA';
+        if (value === 3) return '#86C48F';
+        if (value === 2) return '#58A263';
+        if (value === 1) return '#3D8F40';
+        return 'A5D6A7';
+    };
+
     const positionFilterStyles = {
         control: (base, state) => ({
             ...base,
@@ -132,6 +150,8 @@ function Draft() {
         },
     });
 
+
+    console.log("Current team:", currentTeam);
     return (
         <div className="draft_container">
             <header className="draft_header">
@@ -192,6 +212,7 @@ function Draft() {
                     <div className="big_board_header">
                         <div className="big_board_left">
                             <Select className="position_filter" classNamePrefix="select" options={positionOptions} value={positionFilter} onChange={setPositionFilter} isSearchable={false} styles={positionFilterStyles} theme={positionFilterTheme} />
+                            {/* Add multi-select for position filter */}
                         </div>
                         <div className="big_board_center">
                             <h2>Big Board</h2>
@@ -222,7 +243,38 @@ function Draft() {
                 </section>
 
                 <aside className="team_profile">
-                    <h2>Team Profile</h2>
+                    {currentTeam ? (
+                        <div className="team">
+                            <div className="team_profile_header">
+                                <div className="team_profile_logo_wrapper">
+                                    <img src={`/logos/nfl/${currentTeam.name}.png`} alt={currentTeam.name} className="team_profile_logo" />
+                                </div>
+                                <h2 className="team_name">{currentTeam.name}</h2>
+                            </div>
+                            <div className="team_positional_needs_grid">
+                                <h3 className="team_positional_needs_header">Positional Needs</h3>
+                                <div className="positional_needs_row offensive_need">
+                                    {teamPositionalNeeds.slice(0, 6).map(([position, value]) => (
+                                        <div key={position} className="position_box" style={{ backgroundColor: getPositionUrgencyColor(value) }}>
+                                            <span className="position_label">{position.toUpperCase()}</span>
+                                            <span className="position_value">{value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="positional_needs_row defensive_need">
+                                    {teamPositionalNeeds.slice(6).map(([position, value]) => (
+                                        <div key={position} className="position_box" style={{ backgroundColor: getPositionUrgencyColor(value) }}>
+                                            <span className="position_label">{position.toUpperCase()}</span>
+                                            <span className="position_value">{value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        ) : (
+                            <p>No team on the clock</p>
+                        )}
+                    
                     {/* Include box that has all the information about the team that is currently on the clock, including their positional needs and collection of picks in the draft (the picks that have been made already will have the player assigned to it, the picks that haven't been made will not) */}
                 </aside>
             </main>

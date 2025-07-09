@@ -128,20 +128,20 @@ function Home() {
                 </aside>
 
                 <section className="team_selection">
-                    <div className="teams_grid_header">
+                    <div className="team_selection_grid_header">
                         <h2>Select Teams to Control</h2>
                         <button onClick={handleSelectAll} id="select_all_btn">
                             {selectedTeams.length === teams.length ? "Deselect All" : "Select All"}
                         </button>
                     </div>
 
-                    <div className="teams_grid">
+                    <div className="team_selection_grid">
                         {teams.map((team) => (
-                            <button key={team.id} onClick={() => handleToggleTeam(team.id)} className={`team_btn ${selectedTeams.includes(team.id) ? "selected" : ""}`}>
-                                <div className="team_logo_wrapper">
-                                    <img src={`/logos/nfl/${team.name}.png`} alt={`${team.name} logo`} className="team_logo" />
+                            <button key={team.id} onClick={() => handleToggleTeam(team.id)} className={`select_team_btn ${selectedTeams.includes(team.id) ? "selected" : ""}`}>
+                                <div className="select_team_logo_wrapper">
+                                    <img src={`/logos/nfl/${team.name}.png`} alt={`${team.name} logo`} className="select_team_logo" />
                                 </div>
-                                <span className="team_name">{team.name}</span>
+                                <span className="select_team_name">{team.name}</span>
                             </button>
                         ))}
                     </div>
