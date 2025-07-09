@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import Select from "react-select";
 import axios from "axios";
 
 function Draft() {
@@ -9,6 +10,7 @@ function Draft() {
     const [picks, setPicks] = useState([]);
     const [userControlledTeams, setUserControlledTeams] = useState([]);
     const [players, setPlayers] = useState([]);
+    const [positionFilter, setPositionFilter] = useState({value: "ALL", label: "ALL"});
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -49,9 +51,83 @@ function Draft() {
     }
 
     const currentPickIndex = picks.findIndex(pick => !pick.player);
-    const sortedPlayers = [...players].sort((a, b) => a.rank - b.rank);
 
-    console.log("Sorted Players:", sortedPlayers);
+    const positionOptions = [
+        {value: "ALL", label: "ALL"}, 
+        {value: "QB", label: "QB"},
+        {value: "RB", label: "RB"},
+        {value: "WR", label: "WR"},
+        {value: "TE", label: "TE"},
+        {value: "OT", label: "OT"},
+        {value: "IOL", label: "IOL"},
+        {value: "DE", label: "DE"},
+        {value: "DT", label: "DT"},
+        {value: "LB", label: "LB"},
+        {value: "CB", label: "CB"},
+        {value: "S", label: "S"},
+        {value: "K", label: "K"},
+        {value: "P", label: "P"},
+    ];
+    const filteredPlayers = [...players].filter(player => positionFilter.value === "ALL" || player.position === positionFilter.value).sort((a, b) => a.rank - b.rank);
+    const positionFilterStyles = {
+        control: (base) => ({
+            ...base,
+            backgroundColor: '#265653',
+            borderColor: 'black',
+            borderWidth: '2px',
+            borderRadius: '8px',
+            boxShadow:'4px 4px 0 black',
+            minHeight: '36px',
+            fontSize: '0.9rem'
+        }), 
+        menu: (base) => ({
+            ...base,
+            backgroundColor: '#264653',
+            border: '2px solid black',
+            borderRadius: '8px',
+            boxShadow: '4px 4px 0 black',
+            marginTop: '8px',
+            zIndex: 10
+        }), 
+        menuList: (base) => ({
+            ...base,
+            borderRadius: '8px',
+            paddingTop: 0,
+            paddingBottom: 0,
+        }),
+        option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isSelected ? '#264643' : state.isFocused ? '#92AFAC' : 'white',
+            color: state.isSelected ? 'white' : '#222',
+            padding: '8px 12px',
+            cursor: 'pointer'
+        }),
+        singleValue: (base) => ({
+            ...base,
+            color: 'white',
+            fontWeight: 500
+        }),
+        dropdownIndicator: (base) => ({
+            ...base,
+            color: '#EDF2F4',
+            '&:hover': {
+                color: 'white'
+            }
+        }),
+    };
+    const positionFilterTheme = (theme) => ({
+        ...theme,
+        borderRadius: 8,
+        colors: {
+            ...theme.colors,
+            primary: '#264643',
+            primary25: '#92AFAC', // hover background
+            neutral0: '#264653', // control background
+            neutral20: 'black', // control border
+            neutral80: '#EDF2F4', // control text
+        },
+    });
+
     return (
         <div className="draft_container">
             <header className="draft_header">
@@ -106,15 +182,15 @@ function Draft() {
                         <p>{draft.num_rounds}</p>
                         <br />
                     </div>
-                    {/* Include buttons for Undo Pick, Trade Pick, Pause Draft, Restart Draft, etc. */}
                 </aside>
 
                 <section className="big_board">
                     <div className="big_board_header">
                         <h2>Big Board</h2>
+                        <Select className="position_filter" options={positionOptions} value={positionFilter} onChange={setPositionFilter} isSearchable={false} styles={positionFilterStyles} theme={positionFilterTheme} />
                     </div>
                     <div className="players">
-                        {sortedPlayers.map(player => (
+                        {filteredPlayers.map(player => (
                             <div key={player.id} className="player">
                                 <div className="player_college_logo_wrapper">
                                     <img src={`/logos/college/${player.college.replaceAll(" ", "_")}.png`} alt={player.college} className="player_college_logo" />
@@ -132,8 +208,6 @@ function Draft() {
                             </div>
                         ))}
                     </div>
-                    
-                    {/* Include vertically scrollable list of all players available in individual boxes, each with college logo, player name, position, college name, and button to pick player with current pick */}
                     {/* Also have filter and search buttons at top of section */}
                 </section>
 
