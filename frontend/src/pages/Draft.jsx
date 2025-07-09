@@ -73,18 +73,19 @@ function Draft() {
     ];
     const filteredPlayers = [...players].filter(player => (positionFilter.value === "ALL" || player.position === positionFilter.value) && player.name.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => a.rank - b.rank);
     const positionFilterStyles = {
-        control: (base) => ({
+        control: (base, state) => ({
             ...base,
-            backgroundColor: '#265653',
+            backgroundColor: state.isFocused || state.menuIsOpen ? '#264653' : '#68CABE',
             borderColor: 'black',
             borderWidth: '2px',
             borderRadius: '8px',
             boxShadow:'4px 4px 0 black',
             minHeight: '36px',
             fontSize: '0.9rem',
-            '&hover': {
-                borderColor: 'black'
-            }
+            cursor: 'pointer',
+            '&:hover': {
+                backgroundColor: '#264653',
+            },
         }), 
         menu: (base) => ({
             ...base,
@@ -108,17 +109,14 @@ function Draft() {
             padding: '8px 12px',
             cursor: 'pointer'
         }),
-        singleValue: (base) => ({
+        singleValue: (base, state) => ({
             ...base,
-            color: 'white',
-            fontWeight: 500
+            color: state.isFocused || state.menuIsOpen ? 'white' : 'black',
+            fontWeight: 700,
         }),
-        dropdownIndicator: (base) => ({
+        dropdownIndicator: (base, state) => ({
             ...base,
-            color: '#EDF2F4',
-            '&:hover': {
-                color: 'white'
-            }
+            color: state.isFocused || state.menuIsOpen ? 'white' : 'black',
         }),
     };
     const positionFilterTheme = (theme) => ({
@@ -193,7 +191,7 @@ function Draft() {
                 <section className="big_board">
                     <div className="big_board_header">
                         <div className="big_board_left">
-                            <Select className="position_filter" options={positionOptions} value={positionFilter} onChange={setPositionFilter} isSearchable={false} styles={positionFilterStyles} theme={positionFilterTheme} />
+                            <Select className="position_filter" classNamePrefix="select" options={positionOptions} value={positionFilter} onChange={setPositionFilter} isSearchable={false} styles={positionFilterStyles} theme={positionFilterTheme} />
                         </div>
                         <div className="big_board_center">
                             <h2>Big Board</h2>
