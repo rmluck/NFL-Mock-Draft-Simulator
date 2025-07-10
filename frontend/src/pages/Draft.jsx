@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Select from "react-select";
@@ -17,6 +18,7 @@ function Draft() {
     const [isSelecting, setIsSelecting] = useState(false);
     const [justSelectedId, setJustSelectedId] = useState(null);
     const pickRefs = useRef({});
+    const onTheClockRef = useRef(null);
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -38,7 +40,10 @@ function Draft() {
                 if (!draft) return;
 
                 const picks_result = await axios.get(`/api/mock_draft_picks/${draftId}`);
-                setPicks(picks_result.data);
+                const sortedPicks = picks_result.data.sort((a, b) => {
+                    return a.draft_pick.pick_number - b.draft_pick.pick_number;
+                });
+                setPicks(sortedPicks);
 
                 const user_controlled_teams_result = await axios.get(`/api/user_controlled_teams/${draftId}`);
                 setUserControlledTeams(user_controlled_teams_result.data.map(team => team.team_id));
@@ -54,14 +59,19 @@ function Draft() {
 
     useEffect(() => {
         const nextPickIndex = picks.findIndex(p => !p.player);
-        if (nextPickIndex !== -1) {
-            const nextPickId = picks[nextPickIndex].id;
-            const nextPickElement = pickRefs.current[nextPickId];
-            if (nextPickElement) {
-                nextPickElement.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest",
-                    inline: "start",
+        if (nextPickIndex !== -1 && onTheClockRef.current) {
+            const pick = picks[nextPickIndex];
+            const pickElement = onTheClockRef.current;
+            const container = document.querySelector(".draft_picks");
+
+            if (pickElement && container) {
+                const containerRect = container.getBoundingClientRect();
+                const pickRect = pickElement.getBoundingClientRect();
+                const scrollOffset = pickRect.left - containerRect.left + 2;
+
+                container.scrollBy({
+                    left: scrollOffset,
+                    behavior: "smooth"
                 });
             }
         }
@@ -209,25 +219,51 @@ function Draft() {
                 <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="draft_logo" />
                 
                 <div className="draft_picks_wrapper">
-                    <p id="on_the_clock">On the Clock</p>
                     <div className="draft_picks">
-                        {picks.map((pick, index) => (
-                            <div key={index} ref={el => pickRefs.current[pick.id] = el} className={`draft_pick ${pick.player ? "picked" : index === currentPickIndex ? "on_the_clock" : "future"}`}>
-                                <div className="pick_team_logo_wrapper">
-                                    <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
-                                </div>
-                                <span className="pick_team_name">{pick.team.name}</span>
-                                {/* {pick.player && (
+                        {picks.map((pick, index) => {
+                            if (index === currentPickIndex) {
+                                return (
+                                    <React.Fragment key={pick.id + "-with-header"}>
+                                        <p id="on_the_clock" ref={onTheClockRef} className="on_the_clock_header">On the<br />Clock</p>
+                                        <div ref={el => pickRefs.current[pick.id] = el} className={`draft_pick on_the_clock`}>
+                                            {/* PICK CONTENT */}
+                                            <div className="pick_team_logo_wrapper">
+                                                <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
+                                            </div>
+                                            <span className="pick_team_name">{pick.team.name}</span>
+                                            {pick.player && (
+                                                <div className="pick_selected_player">{pick.player_id.name}</div>
+                                            )}
+                                            <div className="pick_label">
+                                                {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
+                                                <small>
+                                                    {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </React.Fragment>
+                                );
+                            }
+                            return (
+                                <div key={pick.id} ref={el => pickRefs.current[pick.id] = el} className={`draft_pick ${pick.player ? "picked" : "future"}`}>
+                                    {/* PICK CONTENT */}
+                                    <div className="pick_team_logo_wrapper">
+                                        <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
+                                    </div>
+                                    <span className="pick_team_name">{pick.team.name}</span>
+                                    {/* {pick.player && (
                                         <div className="pick_selected_player">{pick.player_id.name}</div>
-                                )} */}
-                                <div className="pick_label">
-                                    {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
-                                    <small>
-                                        {pick.draft_pick.round}.{pick.draft_pick.pick_number}
-                                    </small>
+                                        )} */
+                                    }
+                                    <div className="pick_label">
+                                        {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
+                                        <small>
+                                            {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                        </small>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
                 {/* The list will shift to the left when a pick is made to make sure that the team on the clock is the leftmost box that is visible (scrolling right will show picks in the near/distant future, scrolling left will show picks in the past that have been made with their assigned player*/}
