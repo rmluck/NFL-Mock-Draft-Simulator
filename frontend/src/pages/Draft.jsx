@@ -76,6 +76,10 @@ function Draft() {
     
     const teamPositionalNeeds = currentTeam ? Object.entries(currentTeam).filter(([key, value]) => key !== "name" && key !== "id") : [];
 
+    const teamPicks = currentTeam ? picks.filter(pick => pick.team.id === currentTeam.id) : [];
+
+    // const teamPicks = currentTeam ? picks : [];
+
     const getPositionUrgencyColor = (value) => {
         if (value >= 10) return '#9E1111';
         if (value === 9) return '#BA2626';
@@ -270,12 +274,25 @@ function Draft() {
                                     ))}
                                 </div>
                             </div>
+                            <div className="team_picks_list">
+                                <h3 className="team_picks_list_header">Picks</h3>
+                                <div className="team_picks">
+                                    {teamPicks.map((pick, index) => (
+                                        <div key={index} className="team_pick">
+                                            <span className="pick_info">{pick.draft_pick.round}.{pick.draft_pick.pick_number}</span>
+                                            {pick.player ? (
+                                                <span className="pick_player"><strong>{pick.player.name}</strong> {pick.player.position} - {pick.player.college}</span>
+                                            ) : (
+                                                <span className="pick_empty">Not picked yet</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                        ) : (
-                            <p>No team on the clock</p>
-                        )}
-                    
-                    {/* Include box that has all the information about the team that is currently on the clock, including their positional needs and collection of picks in the draft (the picks that have been made already will have the player assigned to it, the picks that haven't been made will not) */}
+                    ) : (
+                        <p>No team on the clock</p>
+                    )}
                 </aside>
             </main>
         </div>

@@ -748,8 +748,56 @@
   color: black;
 }
 
-.position_box.invisible_position_box {
-  visibility: hidden;
+.team_picks_list {
+  background-color: var(--red);
+  border: 2px solid black;
+  box-shadow: 4px 4px 0 black;
+  margin-top: 25px;
+}
+
+.team_picks_list_header {
+  border-bottom: 6px solid black;
+  margin-bottom: 0px;
+  padding-bottom: 10px;
+}
+
+.team_picks {
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 12px;
+  padding-bottom: 12px;
+  overflow-y: auto;
+}
+
+.team_pick {
+  font-size: 0.85rem;
+  color: black;
+  background-color: var(--light-red);
+  border: 2px solid black;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+}
+
+.pick_info {
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+.pick_player {
+  text-align: right;
+}
+
+.pick_empty {
+  font-style: italic;
+  text-align: right;
 }
 
 /* TEMPLATE STYLING */
