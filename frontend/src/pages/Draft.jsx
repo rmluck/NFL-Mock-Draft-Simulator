@@ -126,6 +126,7 @@ function Draft() {
         }),
         option: (base, state) => ({
             ...base,
+            fontWeight: state.isSelected ? 700 : state.isFocused ? 500 : 400,
             backgroundColor: state.isSelected ? '#264643' : state.isFocused ? '#92AFAC' : 'white',
             color: state.isSelected ? 'white' : '#222',
             padding: '8px 12px',
@@ -222,7 +223,7 @@ function Draft() {
                             <h2>Big Board</h2>
                         </div>
                         <div className="big_board_right">
-                            <input type="text" placeholder={isSearchFocused || isSearchHovered ? "Search player name" : "Search"}className="player_search_input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setIsSearchFocused(true)} onBlur={() => setIsSearchFocused(false)} onMouseEnter={() => setIsSearchHovered(true)} onMouseLeave={() => setIsSearchHovered(false)} />
+                            <input type="text" placeholder={isSearchFocused || isSearchHovered ? "Search players by name" : "Search"}className="player_search_input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onFocus={() => setIsSearchFocused(true)} onBlur={() => setIsSearchFocused(false)} onMouseEnter={() => setIsSearchHovered(true)} onMouseLeave={() => setIsSearchHovered(false)} />
                         </div>
                     </div>
                     <div className="players">
@@ -256,7 +257,14 @@ function Draft() {
                                 <h2 className="team_name">{currentTeam.name}</h2>
                             </div>
                             <div className="team_positional_needs_grid">
-                                <h3 className="team_positional_needs_header">Positional Needs</h3>
+                                <h3 className="team_positional_needs_header">
+                                    Positional Needs
+                                    <span className="positional_needs_info_icon" tabIndex="0">ⓘ
+                                        <span className="positional_needs_tooltip_text">
+                                            Each position is scored from 1 (low need) to 10 (high need). Color-coded by urgency from dark green (1) to dark red (10), with lighter shades in between. Based on team-specific roster evaluations.
+                                        </span>
+                                    </span>
+                                </h3>
                                 <div className="positional_needs_row offensive_need">
                                     {teamPositionalNeeds.slice(0, 6).map(([position, value]) => (
                                         <div key={position} className="position_box" style={{ backgroundColor: getPositionUrgencyColor(value) }}>
@@ -278,7 +286,7 @@ function Draft() {
                                 <h3 className="team_picks_list_header">Picks</h3>
                                 <div className="team_picks">
                                     {teamPicks.map((pick, index) => (
-                                        <div key={index} className="team_pick">
+                                        <div key={index} className={`team_pick ${pick.id === currentPick?.id ? "current_team_pick" : ""}`}>
                                             <span className="pick_info">{pick.draft_pick.round}.{pick.draft_pick.pick_number}</span>
                                             {pick.player ? (
                                                 <span className="pick_player"><strong>{pick.player.name}</strong> {pick.player.position} - {pick.player.college}</span>
