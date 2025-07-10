@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
@@ -14,6 +14,9 @@ function Draft() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [isSearchHovered, setIsSearchHovered] = useState(false);
+    const [isSelecting, setIsSelecting] = useState(false);
+    const [justSelectedId, setJustSelectedId] = useState(null);
+    const pickRefs = useRef({});
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -49,6 +52,21 @@ function Draft() {
         fetchRest();
     }, [draft]);
 
+    useEffect(() => {
+        const nextPickIndex = picks.findIndex(p => !p.player);
+        if (nextPickIndex !== -1) {
+            const nextPickId = picks[nextPickIndex].id;
+            const nextPickElement = pickRefs.current[nextPickId];
+            if (nextPickElement) {
+                nextPickElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "start",
+                });
+            }
+        }
+    }, [picks]);
+
     if (!draft) {
         return <div>Loading draft...</div>;
     }
@@ -78,7 +96,36 @@ function Draft() {
 
     const teamPicks = currentTeam ? picks.filter(pick => pick.team.id === currentTeam.id) : [];
 
-    // const teamPicks = currentTeam ? picks : [];
+    const handleSelectPlayer = async (selectedPlayer) => {
+        if (isSelecting) {
+            return;
+        } else if (!currentPick) {
+            alert("No pick is currently on the clock.");
+            return;
+        } else if (!userControlledTeams.includes(currentPick.team.id)) {
+            alert("You do not control this team.");
+            return;
+        }
+        setIsSelecting(true);
+
+        try {
+            await axios.put(`/api/mock_draft_picks/${currentPick.id}`, {
+                player_id: selectedPlayer.id
+            });
+
+            const updatedPick = {...currentPick, player: selectedPlayer};
+            setPicks(prevPicks => prevPicks.map(pick => pick.id === updatedPick.id ? updatedPick : pick));
+            setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== selectedPlayer.id));
+
+        } catch (err) {
+            console.error("Failed to select player: ", err);
+            alert("An error occurred while selecting the player. Please try again.");
+        }
+        
+        setJustSelectedId(selectedPlayer.id);
+        setTimeout(() => setJustSelectedId(null), 2000);
+        setIsSelecting(false);
+    }
 
     const getPositionUrgencyColor = (value) => {
         if (value >= 10) return '#9E1111';
@@ -156,7 +203,6 @@ function Draft() {
     });
 
 
-    console.log("Current team:", currentTeam);
     return (
         <div className="draft_container">
             <header className="draft_header">
@@ -166,7 +212,7 @@ function Draft() {
                     <p id="on_the_clock">On the Clock</p>
                     <div className="draft_picks">
                         {picks.map((pick, index) => (
-                            <div key={index} className={`draft_pick ${pick.player ? "picked" : index === currentPickIndex ? "on_the_clock" : "future"}`}>
+                            <div key={index} ref={el => pickRefs.current[pick.id] = el} className={`draft_pick ${pick.player ? "picked" : index === currentPickIndex ? "on_the_clock" : "future"}`}>
                                 <div className="pick_team_logo_wrapper">
                                     <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
                                 </div>
@@ -240,7 +286,7 @@ function Draft() {
                                     <small>{player.rank}</small>
                                 </div>
                                 <div className="select_player">
-                                    <button className="select_player_btn">Select</button>
+                                    <button className={`select_player_btn ${justSelectedId === player.id ? "selected_animation" : ""}`} onClick={() => handleSelectPlayer(player)} disabled={isSelecting}>{justSelectedId === player.id ? "✓ Selected!" : "Select"}</button>
                                 </div>
                             </div>
                         ))}

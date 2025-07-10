@@ -390,7 +390,8 @@
 }
 
 .draft_pick.picked .pick_label {
-  background-color: var(--blue);
+  color: var(--white);
+  background-color: var(--red);
 }
 
 .draft_pick.on_the_clock .pick_label {
@@ -656,6 +657,19 @@
   color: white;
   background-color: var(--blue);
   border: 2px solid black;
+}
+
+.select_player_btn.selected_animation {
+  color: white;
+  background-color: var(--green);
+  animation: popIn 0.3s ease-out;
+  transform: scale(1.05);
+}
+
+@keyframes popIn {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1.05); }
 }
 
 /* Draft - Team Profile */
