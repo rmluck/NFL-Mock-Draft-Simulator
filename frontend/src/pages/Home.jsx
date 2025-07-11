@@ -108,7 +108,7 @@ function Home() {
                     </label>
                     <br />
 
-                    <label className="num_rounds">
+                    <div className="num_rounds">
                         Number of Rounds
                         <div className="num_rounds_selector">
                             {[1, 2, 3, 4, 5, 6, 7].map((round) => (
@@ -117,7 +117,7 @@ function Home() {
                                 </button>
                             ))}
                         </div>
-                    </label>
+                    </div>
                     <br />
 
                     <button id="start_btn" onClick={handleStartDraft} disabled={loading}>

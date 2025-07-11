@@ -16,9 +16,31 @@ function Draft() {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [isSearchHovered, setIsSearchHovered] = useState(false);
     const [isSelecting, setIsSelecting] = useState(false);
-    const [justSelectedId, setJustSelectedId] = useState(null);
     const pickRefs = useRef({});
     const onTheClockRef = useRef(null);
+    const currentPickIndex = picks.findIndex(pick => !pick.player);
+    const currentPick = currentPickIndex !== -1 ? picks[currentPickIndex] : null;
+    const currentTeam = currentPick ? currentPick.team : null;
+    const positionOptions = [
+        {value: "ALL", label: "ALL"}, 
+        {value: "QB", label: "QB"},
+        {value: "RB", label: "RB"},
+        {value: "WR", label: "WR"},
+        {value: "TE", label: "TE"},
+        {value: "OT", label: "OT"},
+        {value: "IOL", label: "IOL"},
+        {value: "DE", label: "DE"},
+        {value: "DT", label: "DT"},
+        {value: "LB", label: "LB"},
+        {value: "CB", label: "CB"},
+        {value: "S", label: "S"},
+    ];
+
+    const filteredPlayers = [...players].filter(player => (positionFilter.value === "ALL" || player.position === positionFilter.value) && player.name.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => a.rank - b.rank);
+    
+    const teamPositionalNeeds = currentTeam ? Object.entries(currentTeam).filter(([key, value]) => key !== "name" && key !== "id") : [];
+
+    const teamPicks = currentTeam ? picks.filter(pick => pick.team.id === currentTeam.id) : [];
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -58,9 +80,31 @@ function Draft() {
     }, [draft]);
 
     useEffect(() => {
+        if (!picks.length) {
+            return;
+        }
+
+        const currentPickIndex = picks.findIndex(pick => !pick.player);
+        if (currentPickIndex === -1) {
+            return;
+        }
+
+        const currentPick = picks[currentPickIndex];;
+
+        if (userControlledTeams.includes(currentPick.team.id)) {
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            handleAutoSelectPlayer(currentPick, filteredPlayers);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [picks, userControlledTeams, filteredPlayers]);
+
+    useEffect(() => {
         const nextPickIndex = picks.findIndex(p => !p.player);
         if (nextPickIndex !== -1 && onTheClockRef.current) {
-            const pick = picks[nextPickIndex];
             const pickElement = onTheClockRef.current;
             const container = document.querySelector(".draft_picks");
 
@@ -80,31 +124,6 @@ function Draft() {
     if (!draft) {
         return <div>Loading draft...</div>;
     }
-
-    const currentPickIndex = picks.findIndex(pick => !pick.player);
-    const currentPick = currentPickIndex !== -1 ? picks[currentPickIndex] : null;
-    const currentTeam = currentPick ? currentPick.team : null;
-
-    const positionOptions = [
-        {value: "ALL", label: "ALL"}, 
-        {value: "QB", label: "QB"},
-        {value: "RB", label: "RB"},
-        {value: "WR", label: "WR"},
-        {value: "TE", label: "TE"},
-        {value: "OT", label: "OT"},
-        {value: "IOL", label: "IOL"},
-        {value: "DE", label: "DE"},
-        {value: "DT", label: "DT"},
-        {value: "LB", label: "LB"},
-        {value: "CB", label: "CB"},
-        {value: "S", label: "S"},
-    ];
-
-    const filteredPlayers = [...players].filter(player => (positionFilter.value === "ALL" || player.position === positionFilter.value) && player.name.toLowerCase().includes(searchQuery.toLowerCase())).sort((a, b) => a.rank - b.rank);
-    
-    const teamPositionalNeeds = currentTeam ? Object.entries(currentTeam).filter(([key, value]) => key !== "name" && key !== "id") : [];
-
-    const teamPicks = currentTeam ? picks.filter(pick => pick.team.id === currentTeam.id) : [];
 
     const handleSelectPlayer = async (selectedPlayer) => {
         if (isSelecting) {
@@ -126,15 +145,36 @@ function Draft() {
             const updatedPick = {...currentPick, player: selectedPlayer};
             setPicks(prevPicks => prevPicks.map(pick => pick.id === updatedPick.id ? updatedPick : pick));
             setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== selectedPlayer.id));
-
         } catch (err) {
             console.error("Failed to select player: ", err);
             alert("An error occurred while selecting the player. Please try again.");
         }
         
-        setJustSelectedId(selectedPlayer.id);
-        setTimeout(() => setJustSelectedId(null), 2000);
         setIsSelecting(false);
+    }
+
+    const handleAutoSelectPlayer = async (pick, availablePlayers) => {
+        if (!pick) {
+            alert("No pick is currently on the clock.");
+            return;
+        } else if (availablePlayers.length === 0) {
+            alert("No players available to auto-select.");
+            return;
+        }
+
+        const bestPlayerAvailable = availablePlayers[0];
+        try {
+            await axios.put(`/api/mock_draft_picks/${pick.id}`, {
+                player_id: bestPlayerAvailable.id,
+            });
+
+            const updatedPick = {...pick, player: bestPlayerAvailable};
+            setPicks(prevPicks => prevPicks.map(p => p.id === updatedPick.id ? updatedPick : p));
+            setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== bestPlayerAvailable.id));
+        } catch (err) {
+            console.error("Failed to auto-select player: ", err);
+            alert("An error occurred while auto-selecting the player. Please try again.");
+        }
     }
 
     const getPositionUrgencyColor = (value) => {
@@ -224,16 +264,14 @@ function Draft() {
                             if (index === currentPickIndex) {
                                 return (
                                     <React.Fragment key={pick.id + "-with-header"}>
-                                        <p id="on_the_clock" ref={onTheClockRef} className="on_the_clock_header">On the<br />Clock</p>
+                                        <p ref={onTheClockRef} className="on_the_clock_header">On the<br />Clock</p>
                                         <div ref={el => pickRefs.current[pick.id] = el} className={`draft_pick on_the_clock`}>
-                                            {/* PICK CONTENT */}
                                             <div className="pick_team_logo_wrapper">
                                                 <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
                                             </div>
-                                            <span className="pick_team_name">{pick.team.name}</span>
-                                            {pick.player && (
-                                                <div className="pick_selected_player">{pick.player_id.name}</div>
-                                            )}
+                                            <div className="pick_text_wrapper">
+                                                <div className="pick_team_name">{pick.team.name}</div>
+                                            </div>
                                             <div className="pick_label">
                                                 {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
                                                 <small>
@@ -246,15 +284,17 @@ function Draft() {
                             }
                             return (
                                 <div key={pick.id} ref={el => pickRefs.current[pick.id] = el} className={`draft_pick ${pick.player ? "picked" : "future"}`}>
-                                    {/* PICK CONTENT */}
                                     <div className="pick_team_logo_wrapper">
                                         <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
                                     </div>
-                                    <span className="pick_team_name">{pick.team.name}</span>
-                                    {/* {pick.player && (
-                                        <div className="pick_selected_player">{pick.player_id.name}</div>
-                                        )} */
-                                    }
+                                    <div className="pick_text_wrapper">
+                                        <div className={`pick_team_name ${pick.player ? 'picked' : ''}`}>
+                                            {pick.team.name}
+                                        </div>
+                                        {pick.player && (
+                                            <div className="pick_selected_player">{pick.player.name}</div>
+                                        )}
+                                    </div>
                                     <div className="pick_label">
                                         {userControlledTeams.includes(pick.team.id) && !pick.player && (<small className="user_controlled_team_label">User</small>)}
                                         <small>
@@ -322,7 +362,7 @@ function Draft() {
                                     <small>{player.rank}</small>
                                 </div>
                                 <div className="select_player">
-                                    <button className={`select_player_btn ${justSelectedId === player.id ? "selected_animation" : ""}`} onClick={() => handleSelectPlayer(player)} disabled={isSelecting}>{justSelectedId === player.id ? "✓ Selected!" : "Select"}</button>
+                                    <button className="select_player_btn" onClick={() => handleSelectPlayer(player)} disabled={isSelecting}>{justSelectedId === player.id ? "✓ Selected!" : "Select"}</button>
                                 </div>
                             </div>
                         ))}

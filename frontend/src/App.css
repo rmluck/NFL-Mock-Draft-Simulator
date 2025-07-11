@@ -129,6 +129,7 @@
 }
 
 .num_rounds_selector button {
+  font-weight: normal;
   color: black;
   background-color: var(--white);
   border: 1px solid black;
@@ -137,18 +138,19 @@
   cursor: pointer;
 }
 
-.num_rounds_selector button:hover {
-  color: var(--white);
-  background-color: var(--blue);
-}
-
 .num_rounds_selector button.selected {
   font-weight: bold;
   color: var(--white);
   background-color: var(--green);
 }
 
+.num_rounds_selector button:not(.selected):hover {
+  color: var(--white);
+  background-color: var(--blue);
+}
+
 #start_btn {
+  font-weight: bold;
   color: var(--white);
   background-color: var(--blue);
   border: 2px solid black;
@@ -186,6 +188,7 @@
 }
 
 #select_all_btn {
+  font-weight: bold;
   color: var(--white);
   background-color: var(--blue);
   border: 2px solid black;
@@ -320,7 +323,7 @@
   overflow: hidden;
 }
 
-#on_the_clock {
+.on_the_clock_header {
   color: black;
   background-color: var(--orange);
   border-left: 3px solid black;
@@ -346,7 +349,7 @@
   display: flex;
   gap: 15px;
   margin-top: 16px;
-  padding: 8px 12px;
+  padding: 8px 841px 8px 12px;
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
@@ -383,17 +386,35 @@
   object-fit: contain;
 }
 
+.pick_text_wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  padding-left: 16px;
+  text-align: left;
+}
+
 .pick_team_name {
   font-size: 1.1rem;
   font-weight: bold;
-  text-align: left;
   white-space: nowrap;
-  flex-grow: 1;
-  padding-left: 16px;
+}
+
+.pick_team_name.picked {
+  margin-bottom: 2px;
+  position: relative;
+  top: -2px;
+}
+
+.pick_selected_player {
+  font-size: 0.85rem;
+  color: var(--gray);
+  font-style: italic;
 }
 
 .draft_pick.picked .pick_label {
-  color: var(--white);
+  color: black;
   background-color: var(--red);
 }
 
@@ -629,6 +650,7 @@
   font-weight: bold;
   background-color: var(--red);
   border: 2px solid black;
+  box-shadow: 3px 3px 0 black;
   min-width: 15px;
   height: 10px;
   padding: 3px 8px 8px 8px;
@@ -660,19 +682,6 @@
   color: white;
   background-color: var(--blue);
   border: 2px solid black;
-}
-
-.select_player_btn.selected_animation {
-  color: white;
-  background-color: var(--green);
-  animation: popIn 0.3s ease-out;
-  transform: scale(1.05);
-}
-
-@keyframes popIn {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.1); }
-  100% { transform: scale(1.05); }
 }
 
 /* Draft - Team Profile */
