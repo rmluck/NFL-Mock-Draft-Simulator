@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 
@@ -18,6 +18,7 @@ function Draft() {
     const [isSelecting, setIsSelecting] = useState(false);
     const pickRefs = useRef({});
     const onTheClockRef = useRef(null);
+    const navigate = useNavigate();
     const currentPickIndex = picks.findIndex(pick => !pick.player);
     const currentPick = currentPickIndex !== -1 ? picks[currentPickIndex] : null;
     const currentTeam = currentPick ? currentPick.team : null;
@@ -41,6 +42,20 @@ function Draft() {
     const teamPositionalNeeds = currentTeam ? Object.entries(currentTeam).filter(([key, value]) => key !== "name" && key !== "id") : [];
 
     const teamPicks = currentTeam ? picks.filter(pick => pick.team.id === currentTeam.id) : [];
+
+    const getPositionUrgencyColor = (value) => {
+        if (value >= 10) return '#9E1111';
+        if (value === 9) return '#BA2626';
+        if (value === 8) return '#C55555';
+        if (value === 7) return '#E57373';
+        if (value === 6) return '#F28B82';
+        if (value === 5) return '#FAA199';
+        if (value === 4) return '#A4CEAA';
+        if (value === 3) return '#86C48F';
+        if (value === 2) return '#58A263';
+        if (value === 1) return '#3D8F40';
+        return 'A5D6A7';
+    };
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -121,6 +136,13 @@ function Draft() {
         }
     }, [picks]);
 
+    useEffect(() => {
+        const allPicked = picks.length > 0 && picks.every(p => p.player);
+        if (allPicked) {
+            navigate(`/results/${draftId}`);
+        }
+    }, [picks, draftId])
+
     if (!draft) {
         return <div>Loading draft...</div>;
     }
@@ -176,20 +198,6 @@ function Draft() {
             alert("An error occurred while auto-selecting the player. Please try again.");
         }
     }
-
-    const getPositionUrgencyColor = (value) => {
-        if (value >= 10) return '#9E1111';
-        if (value === 9) return '#BA2626';
-        if (value === 8) return '#C55555';
-        if (value === 7) return '#E57373';
-        if (value === 6) return '#F28B82';
-        if (value === 5) return '#FAA199';
-        if (value === 4) return '#A4CEAA';
-        if (value === 3) return '#86C48F';
-        if (value === 2) return '#58A263';
-        if (value === 1) return '#3D8F40';
-        return 'A5D6A7';
-    };
 
     const positionFilterStyles = {
         control: (base, state) => ({
@@ -356,13 +364,16 @@ function Draft() {
                                 </div>
                                 <div className="player_details">
                                     <span className="player_name">{player.name}</span>
-                                    <span className="player_background">{player.position} - {player.college}</span>
+                                    <span className="player_background">{player.college}</span>
+                                </div>
+                                <div className="player_position">
+                                    {player.position}
                                 </div>
                                 <div className="player_rank">
                                     <small>{player.rank}</small>
                                 </div>
                                 <div className="select_player">
-                                    <button className="select_player_btn" onClick={() => handleSelectPlayer(player)} disabled={isSelecting}>{justSelectedId === player.id ? "✓ Selected!" : "Select"}</button>
+                                    <button className="select_player_btn" onClick={() => handleSelectPlayer(player)} disabled={isSelecting}>Select</button>
                                 </div>
                             </div>
                         ))}
