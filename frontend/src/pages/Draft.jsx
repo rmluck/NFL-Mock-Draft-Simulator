@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate, Link } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 
@@ -264,7 +264,9 @@ function Draft() {
     return (
         <div className="draft_container">
             <header className="draft_header">
-                <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="draft_logo" />
+                <Link to="/" class="logo_link">
+                    <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="draft_logo" />
+                </Link>
                 
                 <div className="draft_picks_wrapper">
                     <div className="draft_picks">

@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
 function Results() {
@@ -10,6 +10,9 @@ function Results() {
     const [userControlledTeams, setUserControlledTeams] = useState([]);
     const[activeTab, setActiveTab] = useState("full");
     const [fullDraftView, setFullDraftView] = useState("list");
+    const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
+    const rounds = Array.from(new Set(picks.map(pick => pick.draft_pick.round))).sort((a, b) => a - b);
+    const picksByRound = rounds.map(round => picks.filter(pick => pick.draft_pick.round === round));
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,7 +21,12 @@ function Results() {
                 axios.get(`/api/user_controlled_teams/${draftId}`)
             ]);
 
-            const picks = picksResponse.data;
+            const picks = picksResponse.data.sort((a, b) => {
+                if (a.draft_pick.round !== b.draft_pick.round) {
+                    return a.draft_pick.round - b.draft_pick.round;
+                }
+                return a.draft_pick.pick_number - b.draft_pick.pick_number;
+            });
             const userControlledTeams = userControlledTeamsResponse.data.map(team => team.team_id);
             const teamsMap = {};
 
@@ -43,11 +51,12 @@ function Results() {
         fetchData();
     }, [draftId]);
 
-    console.log("User Controlled Teams:", userControlledTeams);
     return (
         <div className="results_container">
             <header className="results_header">
-                <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="results_logo" />
+                <Link to="/" class="logo_link">
+                    <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="results_logo" />
+                </Link>
                 <h1>Draft Results</h1>
                 <div className="export_draft_options">
                     <button className="export_draft_btn">Export as PNG</button>
@@ -65,13 +74,7 @@ function Results() {
                             <div key={team.id} className={`tab ${activeTab === team.id ? "active" : ""}`} onClick={() => setActiveTab(team.id)}>{team.name}</div>
                         ))}
                     </div>
-                    {activeTab === "full" && (
-                        <div className="view_toggle">
-                            <button className={`switch_option list ${fullDraftView === "list" ? "active" : ""}`} onClick={() => setFullDraftView("list")}>List</button>
-                            <button className={`switch_option grid ${fullDraftView === "grid" ? "active" : ""}`}>Grid</button>
-                        </div>
-                    )}
-                    <div className="results_list">
+                    <div className={activeTab === "full" && fullDraftView === "grid" ? "results_grid" : "results_list"}>
                         {activeTab === "full" && fullDraftView === "list" && (() => {
                             let currentRound = null;
 
@@ -104,9 +107,25 @@ function Results() {
                             });
                         })()}
 
-                        {/* {activeTab === "full" && fullDraftView === "grid" && (
-                            
-                        )} */}
+                        {activeTab === "full" && fullDraftView === "grid" && (() => {
+                            return picksByRound[currentRoundIndex].map(pick => (
+                                <div key={pick.id} className="results_pick grid">
+                                    <div className="results_pick_logo_wrapper grid">
+                                        <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="results_pick_logo grid" />
+                                    </div>
+                                    <div className="results_pick_details grid">
+                                        <div className="results_pick_text_wrapper grid">
+                                            <span className="results_player_name grid">{pick.player.name}</span>
+                                            <span className="results_player_background grid">{pick.player.college}</span>
+                                        </div>
+                                    </div>
+                                    <div className="results_player_position grid">{pick.player.position}</div>
+                                    <div className="results_pick_number grid">
+                                        <small>{pick.draft_pick.pick_number}</small>
+                                    </div>
+                                </div>
+                            ));
+                        })()}
 
                         {activeTab !== "full" && (() => {
                             const team = teams.find(team => team.team.id === activeTab);
@@ -161,6 +180,21 @@ function Results() {
                                 );
                             });
                         })()} */}
+                    </div>
+                    <div className="view_controls_wrapper">
+                        {activeTab === "full" && fullDraftView === "grid" && (
+                            <div className="round_nav">
+                                <button className="round_arrow" onClick={() => setCurrentRoundIndex((prev) => Math.max(prev - 1, 0))} disabled={currentRoundIndex === 0}>◀</button>
+                                <span className="round_label">Round {rounds[currentRoundIndex]}</span>
+                                <button className="round_arrow" onClick={() => setCurrentRoundIndex((prev) => Math.min(prev + 1, rounds.length - 1))} disabled={currentRoundIndex === rounds.length - 1}>▶</button>
+                            </div>
+                        )}
+                        {activeTab === "full" && (
+                            <div className="view_toggle">
+                                <button className={`switch_option list ${fullDraftView === "list" ? "active" : ""}`} onClick={() => setFullDraftView("list")}>List</button>
+                                <button className={`switch_option grid ${fullDraftView === "grid" ? "active" : ""}`} onClick ={() => setFullDraftView("grid")}>Grid</button>
+                            </div>
+                        )}
                     </div>
                 </section>
             </main>
