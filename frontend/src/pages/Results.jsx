@@ -1,24 +1,111 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import html2canvas from "html2canvas";
 
 function Results() {
     const { draftId } = useParams();
+    const [draft, setDraft] = useState(null);
     const [picks, setPicks] = useState([]);
     const [teams, setTeams] = useState([]);
     const [userControlledTeams, setUserControlledTeams] = useState([]);
     const[activeTab, setActiveTab] = useState("full");
     const [fullDraftView, setFullDraftView] = useState("list");
     const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
+    const resultsRef = useRef(null);
     const rounds = Array.from(new Set(picks.map(pick => pick.draft_pick.round))).sort((a, b) => a - b);
     const picksByRound = rounds.map(round => picks.filter(pick => pick.draft_pick.round === round));
 
+    const exportToCSV = () => {
+        const exportPicks = activeTab === "full" ? picks : picks.filter(pick => pick.team.id === activeTab);
+        const csvRows = [["Round", "Pick", "Team", "Player", "Position", "College", "Rank"]];
+
+        exportPicks.forEach(pick => {
+            csvRows.push([
+                pick.draft_pick.round,
+                pick.draft_pick.pick_number,
+                pick.team.name,
+                pick.player.name,
+                pick.player.position,
+                pick.player.college,
+                pick.player.rank
+            ]);
+        });
+
+        const csvContent = csvRows.map(row => row.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+
+        const filename = `${draft?.name?.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "draft"}_results${activeTab === "full" ? "" : `_${teams.find(team => team.team.id === activeTab).team.name.toLowerCase().replace(/\s+/g, "_")}`}.csv`;
+
+        link.setAttribute("download", filename);
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const exportToJSON = () => {
+        const exportPicks = activeTab === "full" ? picks : picks.filter(pick => pick.team.id === activeTab);
+
+        const simplifiedData = exportPicks.map(pick => ({
+            round: pick.draft_pick.round,
+            pick: pick.draft_pick.pick_number,
+            team: pick.team.name,
+            player: pick.player.name,
+            position: pick.player.position,
+            college: pick.player.college,
+            rank: pick.player.rank
+        }));
+
+        const jsonString = JSON.stringify(simplifiedData, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+
+        const filename = `${draft?.name?.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "draft"}_results${activeTab === "full" ? "" : `_${teams.find(team => team.team.id === activeTab).team.name.toLowerCase().replace(/\s+/g, "_")}`}.json`;
+
+        link.setAttribute("download", filename);
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
+    const exportToPNG = () => {
+        if (!resultsRef.current) {
+            alert("Nothing to export.");
+            return;
+        }
+
+        html2canvas(resultsRef.current, { scale: 2 }).then(canvas => {
+            canvas.toBlob(blob => {
+                if (!blob) {
+                    alert("Failed to generate image.");
+                    return;
+                }
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+
+                const filename = `${draft?.name?.toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "") || "draft"}_results${activeTab === "full" ? "" : `_${teams.find(team => team.team.id === activeTab).team.name.toLowerCase().replace(/\s+/g, "_")}`}.png`;
+
+                link.setAttribute("download", filename);
+                link.click();
+                URL.revokeObjectURL(url);
+            }, "image/png");
+        }).catch(err => {
+            console.error("html2canvas error: ", err);
+            alert("Failed to generate image. Please try again.");
+        });
+    };
+
     useEffect(() => {
         const fetchData = async () => {
-            const [picksResponse, userControlledTeamsResponse] = await Promise.all([
+            const [picksResponse, userControlledTeamsResponse, draftResponse] = await Promise.all([
                 axios.get(`/api/mock_draft_picks/${draftId}`),
-                axios.get(`/api/user_controlled_teams/${draftId}`)
+                axios.get(`/api/user_controlled_teams/${draftId}`),
+                axios.get(`/api/mock_drafts/${draftId}`)
             ]);
 
             const picks = picksResponse.data.sort((a, b) => {
@@ -46,6 +133,7 @@ function Results() {
             setPicks(picksResponse.data);
             setTeams(Object.values(teamsMap));
             setUserControlledTeams(userControlledTeams);
+            setDraft(draftResponse.data);
         };
 
         fetchData();
@@ -54,19 +142,19 @@ function Results() {
     return (
         <div className="results_container">
             <header className="results_header">
-                <Link to="/" class="logo_link">
+                <Link to="/" className="logo_link">
                     <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="results_logo" />
                 </Link>
                 <h1>Draft Results</h1>
                 <div className="export_draft_options">
-                    <button className="export_draft_btn">Export as PNG</button>
+                    <button className="export_draft_btn" onClick={exportToPNG}>Export as PNG</button>
                     <button className="export_draft_btn">Export as PDF</button>
-                    <button className="export_draft_btn">Export as CSV</button>
-                    <button className="export_draft_btn">Export as JSON</button>
+                    <button className="export_draft_btn" onClick={exportToCSV}>Export as CSV</button>
+                    <button className="export_draft_btn" onClick={exportToJSON}>Export as JSON</button>
                 </div>
             </header>
             
-            <main className="results_main">
+            <main className="results_main" ref={resultsRef}>
                 <section className="results">
                     <div className="results_tabs">
                         <div className={`tab ${activeTab === "full" ? "active" : ""}`} onClick={() => setActiveTab("full")}>FULL DRAFT</div>
