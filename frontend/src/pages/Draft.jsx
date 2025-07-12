@@ -22,6 +22,8 @@ function Draft() {
     const currentPickIndex = picks.findIndex(pick => !pick.player);
     const currentPick = currentPickIndex !== -1 ? picks[currentPickIndex] : null;
     const currentTeam = currentPick ? currentPick.team : null;
+    const [showConfirmUndoModal, setShowConfirmUndoModal] = useState(false);
+    const [pickToUndo, setPickToUndo] = useState(null);
     const positionOptions = [
         {value: "ALL", label: "ALL"}, 
         {value: "QB", label: "QB"},
@@ -199,6 +201,37 @@ function Draft() {
         }
     }
 
+    const initiateUndoPick = () => {
+        const lastCompletedPickIndex = [...picks].reverse().findIndex(pick => pick.player);
+        if (lastCompletedPickIndex === -1) {
+            alert("No picks have been made yet.");
+            return;
+        }
+
+        const indexToUndo = picks.length - 1 - lastCompletedPickIndex;
+        setPickToUndo(picks[indexToUndo]);
+        setShowConfirmUndoModal(true);
+    };
+
+    const confirmUndoPick = async () => {
+        try {
+            await axios.put(`/api/mock_draft_picks/${pickToUndo.id}`, { player_id: null });
+            setPlayers(prev => [...prev, pickToUndo.player].sort((a, b) => a.rank - b.rank));
+            setPicks(prev => prev.map(pick => pick.id === pickToUndo.id ? {...pick, player: null} : pick));
+        } catch (err) {
+            console.error("Failed to undo pick: ", err);
+            alert("An error occurred while undoing the pick. Please try again.");
+        } finally {
+            setShowConfirmUndoModal(false);
+            setPickToUndo(null);
+        }
+    };
+
+    const cancelUndoPick = () => {
+        setShowConfirmUndoModal(false);
+        setPickToUndo(null);
+    };
+
     const positionFilterStyles = {
         control: (base, state) => ({
             ...base,
@@ -322,7 +355,7 @@ function Draft() {
             <main className="draft_main">
                 <aside className="draft_tools">
                     <h2>Draft Tools</h2>
-                    <button className="draft_tool">Undo Pick</button>
+                    <button className="draft_tool" onClick={initiateUndoPick}>Undo Pick</button>
                     <br />
                     <button className="draft_tool">Trade Pick</button>
                     <br />
@@ -330,6 +363,18 @@ function Draft() {
                     <br />
                     <button className="draft_tool">Restart Draft</button>
                     <br />
+                    {showConfirmUndoModal && (
+                        <div className="confirm_undo_modal">
+                            <div className="confirm_undo_modal_content">
+                                <p className="confirm_undo_modal_message">Undo pick {pickToUndo?.draft_pick.round}.{pickToUndo?.draft_pick.pick_number}?</p>
+                                <p className="confirm_undo_modal_pick">{pickToUndo?.player.name} selected by {pickToUndo?.team.name}</p>
+                                <div className="confirm_undo_modal_buttons">
+                                <button className="confirm_undo_modal_btn confirm" onClick={confirmUndoPick}>Yes</button>
+                                <button className="confirm_undo_modal_btn cancel" onClick={cancelUndoPick}>No</button>
+                            </div>
+                            </div>
+                        </div>
+                    )}
                     <div className="draft_details">
                         <h3>Details</h3>
                         <br />
