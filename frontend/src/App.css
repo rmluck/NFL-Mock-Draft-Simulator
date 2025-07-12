@@ -941,6 +941,66 @@
   flex-grow: 1;
 }
 
+.share_btn_wrapper {
+  background-color: var(--light-red);
+  border: 2px solid black;
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 black;
+  height: 30%;
+  width: 2.5%;
+  display: flex;
+  position: absolute;
+  left: 77%;
+  padding: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.share_btn {
+  width: 100%;
+  height: 100%;
+  transition: filter 0.2s ease;
+  filter: brightness(0) saturate(100%);
+}
+
+.share_btn_wrapper:hover {
+  background-color: var(--blue);
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.share_btn_wrapper:hover .share_btn {
+  filter: invert(100%);
+}
+
+.share_toast {
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: var(--white);
+  background-color: var(--light-blue);
+  border: 2px solid black;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 black;
+  text-align: left;
+  line-height: 1.7;
+  width: 140px;
+  height: 20px;
+  padding: 8px;
+  position: absolute;
+  left: 65.5%;
+  opacity: 0;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.share_toast.show {
+  opacity: 1;
+}
+
+.share_toast.hidden {
+  display: none;
+}
+
 .export_draft_options {
   width: 275px;
   display: flex;

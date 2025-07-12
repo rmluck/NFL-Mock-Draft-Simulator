@@ -100,6 +100,22 @@ function Results() {
         });
     };
 
+    const handleShareLink = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            const toast = document.getElementById("share_toast");
+            toast.classList.remove("hidden");
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.classList.add("hidden"), 300);
+            }, 2000);
+        } catch (err) {
+            console.error("Failed to copy link to clipboard: ", err);
+        }
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             const [picksResponse, userControlledTeamsResponse, draftResponse] = await Promise.all([
@@ -146,6 +162,10 @@ function Results() {
                     <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="results_logo" />
                 </Link>
                 <h1>Draft Results</h1>
+                <div id="share_toast" class="share_toast hidden">Link copied to clipboard!</div>
+                <button className="share_btn_wrapper" onClick={handleShareLink}>
+                    <img src="/site/share.svg" alt="Share" class="share_btn" />
+                </button>
                 <div className="export_draft_options">
                     <button className="export_draft_btn" onClick={exportToPNG}>Export as PNG</button>
                     <button className="export_draft_btn">Export as PDF</button>
