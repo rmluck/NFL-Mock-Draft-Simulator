@@ -24,6 +24,12 @@ function Draft() {
     const currentTeam = currentPick ? currentPick.team : null;
     const [showConfirmUndoModal, setShowConfirmUndoModal] = useState(false);
     const [pickToUndo, setPickToUndo] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(60);
+    const timerRef = useRef(null);
+    const isUserTurn = currentPick && userControlledTeams.includes(currentPick.team.id);
+    const hasAutoPickedRef = useRef(false);
+    const [paused, setPaused] = useState(false);
+    const previousPickIdRef = useRef(null);
     const positionOptions = [
         {value: "ALL", label: "ALL"}, 
         {value: "QB", label: "QB"},
@@ -96,28 +102,28 @@ function Draft() {
         fetchRest();
     }, [draft]);
 
-    useEffect(() => {
-        if (!picks.length) {
-            return;
-        }
+    // useEffect(() => {
+    //     if (!picks.length) {
+    //         return;
+    //     }
 
-        const currentPickIndex = picks.findIndex(pick => !pick.player);
-        if (currentPickIndex === -1) {
-            return;
-        }
+    //     const currentPickIndex = picks.findIndex(pick => !pick.player);
+    //     if (currentPickIndex === -1) {
+    //         return;
+    //     }
 
-        const currentPick = picks[currentPickIndex];;
+    //     const currentPick = picks[currentPickIndex];;
 
-        if (userControlledTeams.includes(currentPick.team.id)) {
-            return;
-        }
+    //     if (userControlledTeams.includes(currentPick.team.id)) {
+    //         return;
+    //     }
 
-        const timer = setTimeout(() => {
-            handleAutoSelectPlayer(currentPick, filteredPlayers);
-        }, 1000);
+    //     const timer = setTimeout(() => {
+    //         handleAutoSelectPlayer(currentPick, filteredPlayers);
+    //     }, 1000);
 
-        return () => clearTimeout(timer);
-    }, [picks, userControlledTeams, filteredPlayers]);
+    //     return () => clearTimeout(timer);
+    // }, [picks, userControlledTeams, filteredPlayers]);
 
     useEffect(() => {
         const nextPickIndex = picks.findIndex(p => !p.player);
@@ -145,12 +151,66 @@ function Draft() {
         }
     }, [picks, draftId])
 
+    useEffect(() => {
+        if (!currentPick || !currentPick.team) {
+            return;
+        }
+
+        const isUserPick = userControlledTeams.includes(currentPick.team.id);
+
+        if (isUserPick && currentPick.id !== previousPickIdRef.current) {
+            setTimeLeft(60);
+            previousPickIdRef.current = currentPick.id;
+        }
+
+        clearInterval(timerRef.current);
+
+        if (paused) {
+            return;
+        }
+
+        hasAutoPickedRef.current = false;
+
+        if (isUserPick) {
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prev => {
+                    if (paused) {
+                        clearInterval(timerRef.current);
+                        return prev;
+                    }
+
+                    if (prev <= 1) {
+                        clearInterval(timerRef.current);
+                        if (!hasAutoPickedRef.current) {
+                            hasAutoPickedRef.current = true;
+                            handleAutoSelectPlayer(currentPick, [...filteredPlayers]);
+                        }
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        } else if (!currentPick.player && filteredPlayers.length > 0) {
+            if (!hasAutoPickedRef.current && !paused) {
+                hasAutoPickedRef.current = true;
+                setTimeout(() => {
+                    handleAutoSelectPlayer(currentPick, [...filteredPlayers]);
+                }, 1000);
+            }
+        }
+
+        return () => clearInterval(timerRef.current);
+    }, [currentPick, userControlledTeams, paused]);
+
     if (!draft) {
         return <div>Loading draft...</div>;
     }
 
     const handleSelectPlayer = async (selectedPlayer) => {
         if (isSelecting) {
+            return;
+        } else if (paused) {
+            alert("Draft is paused. Please resume before selecting a player.");
             return;
         } else if (!currentPick) {
             alert("No pick is currently on the clock.");
@@ -349,7 +409,6 @@ function Draft() {
                         })}
                     </div>
                 </div>
-                {/* The list will shift to the left when a pick is made to make sure that the team on the clock is the leftmost box that is visible (scrolling right will show picks in the near/distant future, scrolling left will show picks in the past that have been made with their assigned player*/}
             </header>
 
             <main className="draft_main">
@@ -359,7 +418,7 @@ function Draft() {
                     <br />
                     <button className="draft_tool">Trade Pick</button>
                     <br />
-                    <button className="draft_tool"> Pause Draft</button>
+                    <button className="draft_tool" onClick={() => setPaused(prev => !prev)}>{paused ? "Resume" : "Pause"} Draft</button>
                     <br />
                     <button className="draft_tool">Restart Draft</button>
                     <br />
@@ -392,6 +451,11 @@ function Draft() {
 
                 <section className="big_board">
                     <div className="big_board_header">
+                        {isUserTurn && (
+                            <div className={`pick_timer ${timeLeft <= 10 ? "urgent" : ""}`}>
+                                <span>{timeLeft}s</span>
+                            </div>
+                        )}
                         <div className="big_board_left">
                             <Select className="position_filter" classNamePrefix="select" options={positionOptions} value={positionFilter} onChange={setPositionFilter} isSearchable={false} styles={positionFilterStyles} theme={positionFilterTheme} />
                             {/* Add multi-select for position filter */}
@@ -420,7 +484,7 @@ function Draft() {
                                     <small>{player.rank}</small>
                                 </div>
                                 <div className="select_player">
-                                    <button className="select_player_btn" onClick={() => handleSelectPlayer(player)} disabled={isSelecting}>Select</button>
+                                    <button className="select_player_btn" onClick={() => handleSelectPlayer(player)} disabled={isSelecting || !isUserTurn || timeLeft === 0}>Select</button>
                                 </div>
                             </div>
                         ))}
