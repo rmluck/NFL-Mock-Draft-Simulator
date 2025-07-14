@@ -30,6 +30,8 @@ function Draft() {
     const hasAutoPickedRef = useRef(false);
     const [paused, setPaused] = useState(false);
     const previousPickIdRef = useRef(null);
+    const draftPickSoundRef = useRef(null);
+    const onTheClockSoundRef = useRef(null);
     const positionOptions = [
         {value: "ALL", label: "ALL"}, 
         {value: "QB", label: "QB"},
@@ -152,6 +154,14 @@ function Draft() {
     }, [picks, draftId])
 
     useEffect(() => {
+        draftPickSoundRef.current = new Audio("/sounds/draft_pick.mp3");
+        draftPickSoundRef.current.preload = "auto";
+        draftPickSoundRef.current.playbackRate = 1.5;
+        onTheClockSoundRef.current = new Audio("/sounds/on_the_clock.mp3");
+        onTheClockSoundRef.current.preload = "auto";
+    }, []);
+
+    useEffect(() => {
         if (!currentPick || !currentPick.team) {
             return;
         }
@@ -160,6 +170,12 @@ function Draft() {
 
         if (isUserPick && currentPick.id !== previousPickIdRef.current) {
             setTimeLeft(60);
+            if (onTheClockSoundRef.current) {
+                onTheClockSoundRef.current.currentTime = 0;
+                setTimeout(() => {
+                    onTheClockSoundRef.current.play();
+                }, 900);
+            }
             previousPickIdRef.current = currentPick.id;
         }
 
@@ -200,7 +216,7 @@ function Draft() {
         }
 
         return () => clearInterval(timerRef.current);
-    }, [currentPick, userControlledTeams, paused]);
+    }, [currentPick, userControlledTeams, paused, filteredPlayers]);
 
     if (!draft) {
         return <div>Loading draft...</div>;
@@ -218,6 +234,11 @@ function Draft() {
         } else if (!userControlledTeams.includes(currentPick.team.id)) {
             alert("You do not control this team.");
             return;
+        }
+        if (draftPickSoundRef.current) {
+            draftPickSoundRef.current.pause();
+            draftPickSoundRef.current.currentTime = 0;
+            draftPickSoundRef.current.play();
         }
         setIsSelecting(true);
 
