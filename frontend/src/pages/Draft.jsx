@@ -96,36 +96,15 @@ function Draft() {
                 setUserControlledTeams(user_controlled_teams_result.data.map(team => team.team_id));
 
                 const players_result = await axios.get(`/api/players/by_year/`, { params: { year: draft.year } });
-                setPlayers(players_result.data);
+                const pickedPlayers = sortedPicks.filter(pick => pick.player).map(pick => pick.player.id);
+                const availablePlayers = players_result.data.filter(player => !pickedPlayers.includes(player.id));
+                setPlayers(availablePlayers);
             } catch (err) {
                 console.error("Failed to fetch additional data:", err);
             }
         };
         fetchRest();
     }, [draft]);
-
-    // useEffect(() => {
-    //     if (!picks.length) {
-    //         return;
-    //     }
-
-    //     const currentPickIndex = picks.findIndex(pick => !pick.player);
-    //     if (currentPickIndex === -1) {
-    //         return;
-    //     }
-
-    //     const currentPick = picks[currentPickIndex];;
-
-    //     if (userControlledTeams.includes(currentPick.team.id)) {
-    //         return;
-    //     }
-
-    //     const timer = setTimeout(() => {
-    //         handleAutoSelectPlayer(currentPick, filteredPlayers);
-    //     }, 1000);
-
-    //     return () => clearTimeout(timer);
-    // }, [picks, userControlledTeams, filteredPlayers]);
 
     useEffect(() => {
         const nextPickIndex = picks.findIndex(p => !p.player);
@@ -174,7 +153,7 @@ function Draft() {
                 onTheClockSoundRef.current.currentTime = 0;
                 setTimeout(() => {
                     onTheClockSoundRef.current.play();
-                }, 900);
+                }, 1000);
             }
             previousPickIdRef.current = currentPick.id;
         }
@@ -238,7 +217,9 @@ function Draft() {
         if (draftPickSoundRef.current) {
             draftPickSoundRef.current.pause();
             draftPickSoundRef.current.currentTime = 0;
-            draftPickSoundRef.current.play();
+            setTimeout(() => {
+                draftPickSoundRef.current.play().catch(() => {});
+            }, 50);
         }
         setIsSelecting(true);
 
