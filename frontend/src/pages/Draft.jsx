@@ -24,6 +24,7 @@ function Draft() {
     const currentTeam = currentPick ? currentPick.team : null;
     const [showConfirmUndoModal, setShowConfirmUndoModal] = useState(false);
     const [pickToUndo, setPickToUndo] = useState(null);
+    const [showConfirmRestartModal, setShowConfirmRestartModal] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
     const timerRef = useRef(null);
     const isUserTurn = currentPick && userControlledTeams.includes(currentPick.team.id);
@@ -304,7 +305,7 @@ function Draft() {
         try {
             await axios.put(`/api/mock_draft_picks/${pickToUndo.id}`, { player_id: null });
             setPlayers(prev => [...prev, pickToUndo.player].sort((a, b) => a.rank - b.rank));
-            setPicks(prev => prev.map(pick => pick.id === pickToUndo.id ? {...pick, player: null} : pick));
+            setPicks(prev => prev.map(pick => pick.id === pickToUndo.id ? {...pick, player: null, player_id: null} : pick));
         } catch (err) {
             console.error("Failed to undo pick: ", err);
             alert("An error occurred while undoing the pick. Please try again.");
@@ -408,6 +409,23 @@ function Draft() {
         }
     };
 
+    console.log("Picks: ", picks);
+    const confirmRestartDraft = () => {
+        setPicks(prev => prev.map(pick => ({...pick, player: null, player_id: null, team: pick.original_team, team_id: pick.original_team.id})));
+
+        const fetchAllPlayers = async () => {
+            try {
+                const players_result = await axios.get(`/api/players/by_year/`, { params: { year: draft.year } });
+                setPlayers(players_result.data.sort((a, b) => a.rank - b.rank));
+            } catch (err) {
+                console.error("Failed to fetch players:", err);
+            }
+        };
+
+        fetchAllPlayers();
+        setShowConfirmRestartModal(false);
+    };
+
     const positionFilterStyles = {
         control: (base, state) => ({
             ...base,
@@ -470,7 +488,6 @@ function Draft() {
     });
 
 
-    console.log("Trade Evaluation:", tradeEvaluation);
     return (
         <div className="draft_container">
             <header className="draft_header">
@@ -537,7 +554,7 @@ function Draft() {
                     <br />
                     <button className="draft_tool" onClick={() => setPaused(prev => !prev)}>{paused ? "Resume" : "Pause"} Draft</button>
                     <br />
-                    <button className="draft_tool">Restart Draft</button>
+                    <button className="draft_tool" onClick={() => setShowConfirmRestartModal(true)}>Restart Draft</button>
                     <br />
                     {showConfirmUndoModal && (
                         <div className="confirm_undo_modal">
@@ -606,6 +623,17 @@ function Draft() {
                                 <div className="trade_modal_buttons">
                                     <button className="trade_modal_btn submit" onClick={submitTrade}>Submit Trade</button>
                                     <button className="trade_modal_btn cancel" onClick={() => setShowTradeModal(false)}>Cancel Trade</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {showConfirmRestartModal && (
+                        <div className="confirm_restart_modal">
+                            <div className="confirm_restart_modal_content">
+                                <p className="confirm_restart_modal_message">Restart draft?</p>
+                                <div className="confirm_restart_modal_buttons">
+                                    <button className="confirm_restart_modal_btn confirm" onClick={confirmRestartDraft}>Yes</button>
+                                    <button className="confirm_restart_modal_btn cancel" onClick={() => setShowConfirmRestartModal(false)}>No</button>
                                 </div>
                             </div>
                         </div>

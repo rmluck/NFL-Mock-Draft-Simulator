@@ -78,7 +78,6 @@ class DraftPickCreate(BaseModel):
     year: int
     current_team_id: int
     original_team_id: int
-    previous_team_id: int
 
 class DraftPickBase(BaseModel):
     id: int
@@ -87,7 +86,6 @@ class DraftPickBase(BaseModel):
     year: int
     current_team_id: int
     original_team_id: int
-    previous_team_id: int
 
     class Config:
         from_attributes = True
@@ -98,7 +96,6 @@ class DraftPickUpdate(BaseModel):
     year: Optional[int] = None
     current_team_id: Optional[int] = None
     original_team_id: Optional[int] = None
-    previous_team_id: Optional[int] = None
 
 class MockDraftCreate(BaseModel):
     name: Optional[str] = "Mock Draft"
@@ -123,6 +120,7 @@ class MockDraftPickCreate(BaseModel):
     mock_draft_id: int
     team_id: int
     draft_pick_id: int
+    original_team_id: int
 
 class MockDraftPickBase(BaseModel):
     id: int
@@ -130,10 +128,12 @@ class MockDraftPickBase(BaseModel):
     player_id: Optional[int]
     team_id: int
     draft_pick_id: int
+    original_team_id: int
 
     draft_pick: DraftPickBase
     team: TeamBase
     player: Optional[PlayerBase]
+    original_team: TeamBase
 
     class Config:
         from_attributes = True
@@ -143,6 +143,7 @@ class MockDraftPickUpdate(BaseModel):
     player_id: Optional[int] = None
     team_id: Optional[int] = None
     draft_pick_id: Optional[int] = None
+    original_team_id: Optional[int] = None
 
 class UserControlledTeamCreate(BaseModel):
     mock_draft_id: int

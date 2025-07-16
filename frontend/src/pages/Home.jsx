@@ -62,7 +62,8 @@ function Home() {
                 await axios.post(`/api/mock_draft_picks`, {
                     mock_draft_id: createdDraft.id,
                     draft_pick_id: pick.id,
-                    team_id: pick.current_team_id
+                    team_id: pick.current_team_id,
+                    original_team_id: pick.current_team_id
                 });
             }
 

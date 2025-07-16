@@ -41,7 +41,6 @@ class DraftPick(Base):
 
     current_team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
     original_team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
-    previous_team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
 
     current_team = relationship("Team", foreign_keys=[current_team_id], back_populates="draft_picks")
 
@@ -64,11 +63,13 @@ class MockDraftPick(Base):
     player_id = Column(Integer, ForeignKey("players.id"), nullable=True)
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
     draft_pick_id = Column(Integer, ForeignKey("draft_picks.id"), nullable=False)
+    original_team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
 
     mock_draft = relationship("MockDraft", back_populates="mock_draft_picks")
     player = relationship("Player")
-    team = relationship("Team")
+    team = relationship("Team", foreign_keys=[team_id])
     draft_pick = relationship("DraftPick")
+    original_team = relationship("Team", foreign_keys=[original_team_id])
 
 class UserControlledTeam(Base):
     __tablename__ = "user_controlled_teams"

@@ -500,7 +500,7 @@
   border: 2px solid black;
 }
 
-.confirm_undo_modal {
+.confirm_undo_modal, .confirm_restart_modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -513,7 +513,7 @@
   z-index: 1000;
 }
 
-.confirm_undo_modal_content {
+.confirm_undo_modal_content, .confirm_restart_modal_content {
   background: var(--white);
   border: 4px solid black;
   border-radius: 12px;
@@ -524,7 +524,7 @@
   padding: 24px;
 }
 
-.confirm_undo_modal_message {
+.confirm_undo_modal_message, .confirm_restart_modal_message {
   font-size: 1.1rem;
   font-weight: bold;
 }
@@ -535,13 +535,13 @@
   margin-top: -10px;
 }
 
-.confirm_undo_modal_buttons {
+.confirm_undo_modal_buttons, .confirm_restart_modal_buttons {
   display: flex;
   justify-content: center;
   gap: 16px;
 }
 
-.confirm_undo_modal_btn {
+.confirm_undo_modal_btn, .confirm_restart_modal_btn {
   font-size: 0.95rem;
   font-weight: bold;
   border: 2px solid black;
@@ -552,23 +552,23 @@
   transition: background-color 0.2s ease;
 }
 
-.confirm_undo_modal_btn.confirm {
+.confirm_undo_modal_btn.confirm, .confirm_restart_modal_btn.confirm {
   color: black;
   background-color: var(--light-green);
 }
 
-.confirm_undo_modal_btn.confirm:hover {
+.confirm_undo_modal_btn.confirm:hover, .confirm_restart_modal_btn.confirm:hover {
   color: var(--white);
   background-color: var(--blue);
   border: 2px solid black;
 }
 
-.confirm_undo_modal_btn.cancel {
+.confirm_undo_modal_btn.cancel, .confirm_restart_modal_btn.cancel {
   color: black;
   background-color: var(--light-red);
 }
 
-.confirm_undo_modal_btn.cancel:hover {
+.confirm_undo_modal_btn.cancel:hover, .confirm_restart_modal_btn.cancel:hover {
   color: var(--white);
   background-color: var(--blue);
   border: 2px solid black;

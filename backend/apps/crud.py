@@ -92,7 +92,7 @@ def delete_team(db: Session, team_id: int):
     return None
 
 def create_draft_pick(db: Session, draft_pick: schemas.DraftPickCreate):
-    db_draft_pick = models.DraftPick(pick_number=draft_pick.pick_number, round=draft_pick.round, year=draft_pick.year, current_team_id=draft_pick.current_team_id, original_team_id=draft_pick.original_team_id, previous_team_id=draft_pick.current_team_id)
+    db_draft_pick = models.DraftPick(pick_number=draft_pick.pick_number, round=draft_pick.round, year=draft_pick.year, current_team_id=draft_pick.current_team_id, original_team_id=draft_pick.original_team_id)
     db.add(db_draft_pick)
     db.commit()
     db.refresh(db_draft_pick)
@@ -120,8 +120,6 @@ def update_draft_pick(db: Session, draft_pick_id: int, draft_pick: schemas.Draft
             db_draft_pick.current_team_id = draft_pick.current_team_id
         if draft_pick.original_team_id:
             db_draft_pick.original_team_id = draft_pick.original_team_id
-        if draft_pick.previous_team_id:
-            db_draft_pick.previous_team_id = draft_pick.previous_team_id
         db.commit()
         db.refresh(db_draft_pick)
     return db_draft_pick
@@ -169,7 +167,7 @@ def delete_mock_draft(db: Session, mock_draft_id: int):
     return None
 
 def create_mock_draft_pick(db: Session, mock_draft_pick: schemas.MockDraftPickCreate):
-    db_mock_draft_pick = models.MockDraftPick(mock_draft_id=mock_draft_pick.mock_draft_id, team_id=mock_draft_pick.team_id, draft_pick_id=mock_draft_pick.draft_pick_id)
+    db_mock_draft_pick = models.MockDraftPick(mock_draft_id=mock_draft_pick.mock_draft_id, team_id=mock_draft_pick.team_id, draft_pick_id=mock_draft_pick.draft_pick_id, original_team_id=mock_draft_pick.original_team_id)
     db.add(db_mock_draft_pick)
     db.commit()
     db.refresh(db_mock_draft_pick)
@@ -192,6 +190,8 @@ def update_mock_draft_pick(db: Session, mock_draft_pick_id: int, mock_draft_pick
             db_mock_draft_pick.team_id = mock_draft_pick.team_id
         if mock_draft_pick.draft_pick_id:
             db_mock_draft_pick.draft_pick_id = mock_draft_pick.draft_pick_id
+        if mock_draft_pick.original_team_id:
+            db_mock_draft_pick.original_team_id = mock_draft_pick.original_team_id
         db.commit()
         db.refresh(db_mock_draft_pick)
     return db_mock_draft_pick

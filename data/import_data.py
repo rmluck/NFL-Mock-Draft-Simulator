@@ -50,7 +50,6 @@ with open(os.path.join(DATA_FOLDER, "draft_picks.csv"), newline="") as file:
             pick_number = row["Pick Number"],
             current_team_id=current_team.id if current_team else None,
             original_team_id=original_team.id if original_team else None,
-            previous_team_id=current_team.id if current_team else None,
             year = row["Year"]
         )
         session.add(draft_pick)
