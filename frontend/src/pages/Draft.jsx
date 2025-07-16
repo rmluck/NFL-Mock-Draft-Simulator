@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useParams, useNavigate, Link } from "react-router-dom";
 import Select from "react-select";
@@ -32,6 +32,13 @@ function Draft() {
     const previousPickIdRef = useRef(null);
     const draftPickSoundRef = useRef(null);
     const onTheClockSoundRef = useRef(null);
+    const [showTradeModal, setShowTradeModal] = useState(false);
+    const [tradePartner, setTradePartner] = useState(null);
+    const userInteractedRef = useRef(false);
+    const [tradedPicks, setTradedPicks] = useState({
+        currentTeam: [],
+        tradePartner: []
+    });
     const positionOptions = [
         {value: "ALL", label: "ALL"}, 
         {value: "QB", label: "QB"},
@@ -149,7 +156,7 @@ function Draft() {
 
         if (isUserPick && currentPick.id !== previousPickIdRef.current) {
             setTimeLeft(60);
-            if (onTheClockSoundRef.current) {
+            if (userInteractedRef.current && onTheClockSoundRef.current) {
                 onTheClockSoundRef.current.currentTime = 0;
                 setTimeout(() => {
                     onTheClockSoundRef.current.play();
@@ -196,6 +203,21 @@ function Draft() {
 
         return () => clearInterval(timerRef.current);
     }, [currentPick, userControlledTeams, paused, filteredPlayers]);
+
+    useEffect(() => {
+        const handleUserInteraction = () => {
+            userInteractedRef.current = true;
+            window.removeEventListener("click", handleUserInteraction);
+            window.removeEventListener("keydown", handleUserInteraction);
+        };
+        window.addEventListener("click", handleUserInteraction);
+        window.addEventListener("keydown", handleUserInteraction);
+
+        return () => {
+            window.removeEventListener("click", handleUserInteraction);
+            window.removeEventListener("keydown", handleUserInteraction);
+        };
+    }, []);
 
     if (!draft) {
         return <div>Loading draft...</div>;
@@ -294,6 +316,59 @@ function Draft() {
         setPickToUndo(null);
     };
 
+    const togglePickSelection = (teamSide, pickId) => {
+        setTradedPicks(prev => {
+            const picks = prev[teamSide];
+            return {
+                ...prev,
+                [teamSide]: picks.includes(pickId) ? picks.filter(id => id !== pickId) : [...picks, pickId]
+            };
+        });
+    };
+
+    const getTradePartnerOptions = () => {
+        return [...new Set(picks.map(pick => pick.team))].filter(team => team.id !== currentTeam.id).map(team => ({ value: team.id, label: team.name, team }));
+    };
+
+    const handleSelectTradePartner = (selectedOption) => {
+        setTradePartner(selectedOption.team);
+        setTradedPicks(prev => ({ ...prev, tradePartner: []}));
+    };
+
+    const submitTrade = () => {
+        if (tradedPicks.currentTeam.length === 0 && tradedPicks.tradePartner.length === 0) {
+            alert("Please select at least one pick from each team to trade.");
+            return;
+        }
+
+        try {
+            for (const pickId of tradedPicks.currentTeam) {
+                axios.put(`/api/mock_draft_picks/${pickId}`, {
+                    team_id: tradePartner.id
+                });
+
+                setPicks(prevPicks => prevPicks.map(pick => pick.id === pickId ? {...pick, team: tradePartner } : pick));
+            }
+            for (const pickId of tradedPicks.tradePartner) {
+                axios.put(`/api/mock_draft_picks/${pickId}`, {
+                    team_id: currentTeam.id
+                });
+
+                setPicks(prevPicks => prevPicks.map(pick => pick.id === pickId ? {...pick, team: currentTeam } : pick));
+            }
+        } catch (err) {
+            console.error("Failed to submit trade: ", err);
+            alert("An error occurred while submitting the trade. Please try again.");
+        } finally {
+            setShowTradeModal(false);
+            setTradePartner(null);
+            setTradedPicks({
+                currentTeam: [],
+                tradePartner: []
+            });
+        }
+    };
+
     const positionFilterStyles = {
         control: (base, state) => ({
             ...base,
@@ -356,6 +431,7 @@ function Draft() {
     });
 
 
+    console.log("Current pick: ", currentPick);
     return (
         <div className="draft_container">
             <header className="draft_header">
@@ -418,7 +494,7 @@ function Draft() {
                     <h2>Draft Tools</h2>
                     <button className="draft_tool" onClick={initiateUndoPick}>Undo Pick</button>
                     <br />
-                    <button className="draft_tool">Trade Pick</button>
+                    <button className="draft_tool" onClick={() => setShowTradeModal(true)}>Trade Pick</button>
                     <br />
                     <button className="draft_tool" onClick={() => setPaused(prev => !prev)}>{paused ? "Resume" : "Pause"} Draft</button>
                     <br />
@@ -430,9 +506,63 @@ function Draft() {
                                 <p className="confirm_undo_modal_message">Undo pick {pickToUndo?.draft_pick.round}.{pickToUndo?.draft_pick.pick_number}?</p>
                                 <p className="confirm_undo_modal_pick">{pickToUndo?.player.name} selected by {pickToUndo?.team.name}</p>
                                 <div className="confirm_undo_modal_buttons">
-                                <button className="confirm_undo_modal_btn confirm" onClick={confirmUndoPick}>Yes</button>
-                                <button className="confirm_undo_modal_btn cancel" onClick={cancelUndoPick}>No</button>
+                                    <button className="confirm_undo_modal_btn confirm" onClick={confirmUndoPick}>Yes</button>
+                                    <button className="confirm_undo_modal_btn cancel" onClick={cancelUndoPick}>No</button>
+                                </div>
                             </div>
+                        </div>
+                    )}
+                    {showTradeModal && (
+                        <div className="trade_modal">
+                            <div className="trade_modal_content">
+                                <div className="trade_modal_header">
+                                    <h2>Trade Picks</h2>
+                                    <Select className="trade_team_dropdown" options={getTradePartnerOptions()} onChange={handleSelectTradePartner} placeholder="Select Trade Partner" />
+                                </div>
+                                <div className="trade_columns">
+                                    <div className="trade_team_column">
+                                        <div className="trade_team">
+                                            <div className="trade_team_logo_wrapper">
+                                                <img src={`/logos/nfl/${currentTeam.name}.png`} alt={currentTeam.name} className="trade_team_logo" />
+                                            </div>
+                                            <div className="trade_team_name">
+                                                {currentTeam.name}
+                                            </div>
+                                        </div>
+                                        <div className="trade_picks">
+                                            {teamPicks.filter(pick => !pick.player).map(pick => (
+                                                <button key={pick.id} className={`trade_pick_btn ${tradedPicks.currentTeam.includes(pick.id) ? "selected" : ""}`} onClick={() => togglePickSelection("currentTeam", pick.id)}>
+                                                    {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="trade_team_column">
+                                        {tradePartner && (
+                                            <>
+                                                <div className="trade_team">
+                                                    <div className="trade_team_logo_wrapper">
+                                                        <img src={`/logos/nfl/${tradePartner.name}.png`} alt={tradePartner.name} className="trade_team_logo" />
+                                                    </div>
+                                                    <div className="trade_team_name">
+                                                        {tradePartner.name}
+                                                    </div>
+                                                </div>
+                                                <div className="trade_picks">
+                                                    {picks.filter(pick => pick.team.id === tradePartner.id && !pick.player).map(pick => (
+                                                        <button key={pick.id} className={`trade_pick_btn ${tradedPicks.tradePartner.includes(pick.id) ? "selected" : ""}`} onClick={() => togglePickSelection("tradePartner", pick.id)}>
+                                                            {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="trade_modal_buttons">
+                                    <button className="trade_modal_btn submit" onClick={submitTrade}>Submit Trade</button>
+                                    <button className="trade_modal_btn cancel" onClick={() => setShowTradeModal(false)}>Cancel Trade</button>
+                                </div>
                             </div>
                         </div>
                     )}
