@@ -614,7 +614,6 @@
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
-  margin-bottom: 40px;
 }
 
 .trade_team_column {
@@ -692,6 +691,42 @@
   color: white;
   background-color: var(--blue);
   border: 2px solid black;
+}
+
+.trade_evaluation {
+  background-color: var(--white);
+  border: 2px solid black;
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 black;
+  width: 100%;
+  height: 20px;
+  margin: 10px 0 20px 0;
+  position: relative;
+  overflow: visible;
+}
+
+.trade_evaluation_bar {
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 10px;
+  width: 25%;
+  height: 20px;
+  position: absolute;
+  left: 38%;
+  transform: translateX(0) translateY(-50%);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.trade_evaluation_bar.fair {
+  background-color: var(--light-green);
+}
+
+.trade_evaluation_bar.acceptable {
+  background-color: var(--light-orange);
+}
+
+.trade_evaluation_bar.lopsided {
+  background-color: var(--light-red);
 }
 
 .trade_modal_buttons {

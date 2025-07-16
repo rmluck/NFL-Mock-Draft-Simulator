@@ -35,6 +35,7 @@ function Draft() {
     const [showTradeModal, setShowTradeModal] = useState(false);
     const [tradePartner, setTradePartner] = useState(null);
     const userInteractedRef = useRef(false);
+    const [tradeEvaluation, setTradeEvaluation] = useState(null);
     const [tradedPicks, setTradedPicks] = useState({
         currentTeam: [],
         tradePartner: []
@@ -73,6 +74,8 @@ function Draft() {
         if (value === 1) return '#3D8F40';
         return 'A5D6A7';
     };
+
+    const tradeValueChart = {2025: {1: 1000, 2: 717, 3: 514, 4: 491, 5: 468, 6: 446, 7: 426, 8: 406, 9: 387, 10: 369, 11: 358, 12: 347, 13: 336, 14: 325, 15: 315, 16: 305, 17: 296, 18: 287, 19: 278, 20: 269, 21: 261, 22: 253, 23: 245, 24: 237, 25: 230, 26: 223, 27: 216, 28: 209, 29: 202, 30: 196, 31: 190, 32: 184, 33: 180, 34: 175, 35: 170, 36: 166, 37: 162, 38: 157, 39: 153, 40: 149, 41: 146, 42: 142, 43: 138, 44: 135, 45: 131, 46: 128, 47: 124, 48: 121, 49: 118, 50: 115, 51: 112, 52: 109, 53: 106, 54: 104, 55: 101, 56: 98, 57: 96, 58: 93, 59: 91, 60: 88, 61: 86, 62: 84, 63: 82, 64: 80, 65: 78, 66: 76, 67: 75, 68: 73, 69: 71, 70: 70, 71: 68, 72: 67, 73: 65, 74: 64, 75: 63, 76: 61, 77: 60, 78: 59, 79: 57, 80: 56, 81: 55, 82: 54, 83: 52, 84: 51, 85: 50, 86: 49, 87: 48, 88: 47, 89: 46, 90: 45, 91: 44, 92: 43, 93: 32, 94: 41, 95: 40, 96: 39, 97: 38, 98: 37, 99: 36, 100: 35, 101: 34, 102: 34, 103: 33, 104: 33, 105: 32, 106: 32, 107: 31, 108: 31, 109: 30, 110: 30, 111: 29, 112: 29, 113: 28, 114: 28, 115: 27, 116: 26, 117: 26, 118: 25, 119: 25, 120: 24, 121: 24, 122: 23, 123: 23, 124: 22, 125: 21, 126: 21, 127: 20, 128: 20, 129: 19, 130: 19, 131: 18, 132: 18, 133: 18, 134: 17, 135: 17, 136: 17, 137: 16, 138: 16, 139: 15, 140: 15, 141: 15, 142: 14, 143: 14, 144: 14, 145: 13, 146: 13, 147: 13, 148: 13, 149: 12, 150: 12, 151: 12, 152: 12, 153: 11, 154: 11, 155: 11, 156: 11, 157: 10, 158: 10, 159: 10, 160: 10, 161: 10, 162: 10, 163: 10, 164: 9, 165: 9, 166: 9, 167: 9, 168: 9, 169: 9, 170: 9, 171: 9, 172: 9, 173: 8, 174: 8, 175: 8, 176: 8, 177: 8, 178: 8, 179: 8, 180: 7, 181: 7, 182: 7, 183: 7, 184: 7, 185: 6, 186: 6, 187: 6, 188: 6, 189: 6, 190: 6, 191: 6, 192: 6, 193: 5, 194: 5, 195: 5, 196: 5, 197: 5, 198: 5, 199: 5, 200: 5, 201: 5, 202: 4, 203: 4, 204: 4, 205: 4, 206: 4, 207: 4, 208: 4, 209: 4, 210: 4, 211: 4, 212: 4, 213: 4, 214: 4, 215: 4, 216: 3, 217: 3, 218: 3, 219: 3, 220: 3, 221: 3, 222: 3, 23: 3, 224: 3, 225: 3, 226: 2, 227: 2, 228: 2, 229: 2, 230: 2, 231: 2, 232: 2, 233: 2, 234: 2, 235: 2, 236: 2, 237: 2, 238: 1, 239: 1, 240: 1, 241: 1, 242: 1, 243: 1, 244: 1, 245: 1, 246: 1, 247: 1, 248: 1, 249: 1, 250: 1, 251: 1, 252: 1, 253: 1, 254: 1, 255: 1, 256: 1, 257: 1}};
 
     useEffect(() => {
         const fetchDraft = async () => {
@@ -318,11 +321,25 @@ function Draft() {
 
     const togglePickSelection = (teamSide, pickId) => {
         setTradedPicks(prev => {
-            const picks = prev[teamSide];
-            return {
+            const currentSelectedIds = prev[teamSide];
+            const updated = {
                 ...prev,
-                [teamSide]: picks.includes(pickId) ? picks.filter(id => id !== pickId) : [...picks, pickId]
+                [teamSide]: currentSelectedIds.includes(pickId) ? currentSelectedIds.filter(id => id !== pickId) : [...currentSelectedIds, pickId]
             };
+
+            const picksDataFromIds = (pickIds) => picks.filter(pick => pickIds.includes(pick.id));
+
+            const team1Picks = picksDataFromIds(updated.currentTeam);
+            const team2Picks = picksDataFromIds(updated.tradePartner);
+
+            if (team1Picks.length > 0 || team2Picks.length > 0) {
+                const evaluation = evaluateTrade(team1Picks, team2Picks, tradeValueChart);
+                setTradeEvaluation(evaluation);
+            } else {
+                setTradeEvaluation(null);
+            }
+
+            return updated;
         });
     };
 
@@ -333,6 +350,28 @@ function Draft() {
     const handleSelectTradePartner = (selectedOption) => {
         setTradePartner(selectedOption.team);
         setTradedPicks(prev => ({ ...prev, tradePartner: []}));
+    };
+
+    const evaluateTrade = (team1Picks, team2Picks, tradeValueChart) => {
+        const sumValues = picks => picks.reduce((sum, pick) => sum + (tradeValueChart[draft.year]?.[pick.draft_pick.pick_number] || 0), 0);
+
+        const team1Total = sumValues(team1Picks);
+        const team2Total = sumValues(team2Picks);
+
+        const difference = Math.abs(team1Total - team2Total);
+        const largerTotal = Math.max(team1Total, team2Total);
+        const percentDifference = (difference / largerTotal) * 100;
+
+        let verdict;
+        if (percentDifference <= 5) {
+            verdict = "Fair";
+        } else if (percentDifference <= 10) {
+            verdict = "Acceptable";
+        } else {
+            verdict = "Lopsided";
+        }
+
+        return { team1Total, team2Total, difference, percentDifference, verdict };
     };
 
     const submitTrade = () => {
@@ -431,7 +470,7 @@ function Draft() {
     });
 
 
-    console.log("Current pick: ", currentPick);
+    console.log("Trade Evaluation:", tradeEvaluation);
     return (
         <div className="draft_container">
             <header className="draft_header">
@@ -559,6 +598,11 @@ function Draft() {
                                         )}
                                     </div>
                                 </div>
+                                {tradeEvaluation && (
+                                    <div className="trade_evaluation">
+                                        <div className={`trade_evaluation_bar ${tradeEvaluation.verdict.toLowerCase()}`} style={{ transform: tradeEvaluation.verdict === "Fair" ? "translateX(0)" : tradeEvaluation.team1Total > tradeEvaluation.team2Total ? `translateX(${tradeEvaluation.percentDifference}%)` : `translateX(${-tradeEvaluation.percentDifference}%)` }} title={`Trade Verdict: ${tradeEvaluation.verdict}`}>{tradeEvaluation.verdict}</div>
+                                    </div>
+                                )}
                                 <div className="trade_modal_buttons">
                                     <button className="trade_modal_btn submit" onClick={submitTrade}>Submit Trade</button>
                                     <button className="trade_modal_btn cancel" onClick={() => setShowTradeModal(false)}>Cancel Trade</button>
