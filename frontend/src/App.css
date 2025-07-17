@@ -399,7 +399,7 @@
   flex-direction: column;
   justify-content: center;
   flex-grow: 1;
-  padding-left: 16px;
+  padding-left: 10px;
   text-align: left;
 }
 
@@ -1235,6 +1235,7 @@
   color: var(--yellow);
   text-align: center;
   flex-grow: 1;
+  padding-left: 100px;
 }
 
 .share_btn_wrapper {
@@ -1245,8 +1246,7 @@
   height: 30%;
   width: 2.5%;
   display: flex;
-  position: absolute;
-  left: 77%;
+  margin-right: 10px;
   padding: 2px;
   transition: background-color 0.2s ease;
 }
@@ -1297,7 +1297,7 @@
   display: none;
 }
 
-.export_draft_options {
+.results_draft_buttons {
   width: 275px;
   display: flex;
   flex-wrap: wrap;
@@ -1305,7 +1305,7 @@
   margin-right: 15px;
 }
 
-.export_draft_btn {
+.results_draft_btn {
   font-size: 0.85rem;
   font-weight: bold;
   color: black;
@@ -1319,7 +1319,7 @@
   transition: background-color 0.2s ease;
 }
 
-.export_draft_btn:hover {
+.results_draft_btn:hover {
   color: white;
   background-color: var(--blue);
   border: 2px solid black;

@@ -409,7 +409,6 @@ function Draft() {
         }
     };
 
-    console.log("Picks: ", picks);
     const confirmRestartDraft = () => {
         setPicks(prev => prev.map(pick => ({...pick, player: null, player_id: null, team: pick.original_team, team_id: pick.original_team.id})));
 

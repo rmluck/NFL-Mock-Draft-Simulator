@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import html2canvas from "html2canvas";
 
@@ -16,6 +16,11 @@ function Results() {
     const resultsRef = useRef(null);
     const rounds = Array.from(new Set(picks.map(pick => pick.draft_pick.round))).sort((a, b) => a - b);
     const picksByRound = rounds.map(round => picks.filter(pick => pick.draft_pick.round === round));
+    const navigate = useNavigate();
+
+    const handleNewDraft = () => {
+        navigate("/");
+    };
 
     const exportToCSV = () => {
         const exportPicks = activeTab === "full" ? picks : picks.filter(pick => pick.team.id === activeTab);
@@ -162,15 +167,16 @@ function Results() {
                     <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="results_logo" />
                 </Link>
                 <h1>Draft Results</h1>
-                <div id="share_toast" class="share_toast hidden">Link copied to clipboard!</div>
+                <div id="share_toast" className="share_toast hidden">Link copied to clipboard!</div>
                 <button className="share_btn_wrapper" onClick={handleShareLink}>
-                    <img src="/site/share.svg" alt="Share" class="share_btn" />
+                    <img src="/site/share.svg" alt="Share" className="share_btn" />
                 </button>
-                <div className="export_draft_options">
-                    <button className="export_draft_btn" onClick={exportToPNG}>Export as PNG</button>
-                    <button className="export_draft_btn">Export as PDF</button>
-                    <button className="export_draft_btn" onClick={exportToCSV}>Export as CSV</button>
-                    <button className="export_draft_btn" onClick={exportToJSON}>Export as JSON</button>
+                <div className="results_draft_buttons">
+                    <button className="results_draft_btn" onClick={handleNewDraft}>New Draft</button>
+                    <button className="results_draft_btn" onClick={exportToPNG}>Export as PNG</button>
+                    {/* <button className="export_draft_btn">Export as PDF</button> */}
+                    <button className="results_draft_btn" onClick={exportToCSV}>Export as CSV</button>
+                    <button className="results_draft_btn" onClick={exportToJSON}>Export as JSON</button>
                 </div>
             </header>
             
