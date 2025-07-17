@@ -8,10 +8,11 @@ function Home() {
     const [year, setYear] = useState(2025);
     const[teams, setTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
-    const [draftPicks, setDraftPicks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [darkMode, setDarkMode] = useState(false);
     const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchTeams = async () => {
@@ -24,6 +25,14 @@ function Home() {
         };
         fetchTeams();
     }, []);
+
+    useEffect(() => {
+        if (darkMode) {
+            document.documentElement.classList.add("dark_mode");
+        } else {
+            document.documentElement.classList.remove("dark_mode");
+        }
+    }, [darkMode]);
 
     const handleToggleTeam = (teamId) => {
         setSelectedTeams((prev) => prev.includes(teamId) ? prev.filter((id) => id !== teamId) : [...prev, teamId]);
@@ -107,6 +116,9 @@ function Home() {
                             <option value={2025}>2025</option>
                         </select>
                     </label>
+                    <button className="dark_mode_btn" onClick={() => setDarkMode(prev => !prev)}>
+                        {darkMode ? "Light Mode" : "Dark Mode"}
+                    </button>
                     <br />
 
                     <div className="num_rounds">
