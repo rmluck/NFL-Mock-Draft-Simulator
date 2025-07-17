@@ -37,6 +37,7 @@ function Draft() {
     const [tradePartner, setTradePartner] = useState(null);
     const userInteractedRef = useRef(false);
     const [tradeEvaluation, setTradeEvaluation] = useState(null);
+    const [soundsMuted, setSoundsMuted] = useState(false);
     const [tradedPicks, setTradedPicks] = useState({
         currentTeam: [],
         tradePartner: []
@@ -160,7 +161,7 @@ function Draft() {
 
         if (isUserPick && currentPick.id !== previousPickIdRef.current) {
             setTimeLeft(60);
-            if (userInteractedRef.current && onTheClockSoundRef.current) {
+            if (!soundsMuted && userInteractedRef.current && onTheClockSoundRef.current) {
                 onTheClockSoundRef.current.currentTime = 0;
                 setTimeout(() => {
                     onTheClockSoundRef.current.play();
@@ -240,7 +241,7 @@ function Draft() {
             alert("You do not control this team.");
             return;
         }
-        if (draftPickSoundRef.current) {
+        if (!soundsMuted && draftPickSoundRef.current) {
             draftPickSoundRef.current.pause();
             draftPickSoundRef.current.currentTime = 0;
             setTimeout(() => {
@@ -637,7 +638,12 @@ function Draft() {
                             </div>
                         </div>
                     )}
+                    
+                    <button className={`mute_btn_wrapper ${soundsMuted ? "muted" : "unmuted"}`} onClick={() => setSoundsMuted(prev => !prev)}>
+                            <img src={soundsMuted ? "/site/unmute.svg" : "/site/mute.svg"} alt={soundsMuted ? "Unmute" : "Mute"} className="mute_btn" />
+                        </button>
                     <div className="draft_details">
+                        
                         <h3>Details</h3>
                         <br />
                         <p><strong>Name</strong></p>
@@ -649,6 +655,7 @@ function Draft() {
                         <p><strong>Rounds</strong></p>
                         <p>{draft.num_rounds}</p>
                         <br />
+                        
                     </div>
                 </aside>
 

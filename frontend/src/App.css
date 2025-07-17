@@ -243,7 +243,7 @@
 }
 
 #select_all_btn:hover {
-  color: white;
+  color: var(--white);
   background-color: var(--blue);
 }
 
@@ -312,7 +312,7 @@
 }
 
 .error {
-  color: red;
+  color: var(--red);
   margin-top: 10px;
 }
 
@@ -329,6 +329,7 @@
   background-color: var(--red);
   border-bottom: 6px solid var(--yellow);
   height: 15vh;
+  min-height: 120px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -375,7 +376,7 @@
 }
 
 .on_the_clock_header {
-  color: black;
+  color: var(--black);
   background-color: var(--orange);
   border-left: 3px solid var(--black);
   border-right: 3px solid var(--black);
@@ -465,7 +466,7 @@
 }
 
 .draft_pick.picked .pick_label {
-  color: black;
+  color: var(--black);
   background-color: var(--red);
 }
 
@@ -475,7 +476,7 @@
 }
 
 .draft_pick.future .pick_label {
-  color: black;
+  color: var(--black);
   background-color: var(--orange);
 }
 
@@ -495,7 +496,7 @@
 
 .user_controlled_team_label {
   font-size: 0.7rem;
-  color: white;
+  color: var(--white);
   background-color: var(--blue);
   border: 2px solid var(--black);
   box-shadow: 3px 3px 0 var(--black);
@@ -510,7 +511,7 @@
 /* Draft - Tools */
 
 .draft_tools {
-  color: black;
+  color: var(--black);
   background-color: var(--yellow);
   border: 2px solid var(--black);
   box-shadow: 6px 6px 0 var(--black);
@@ -539,7 +540,7 @@
 }
 
 .draft_tool:hover {
-  color: white;
+  color: var(--white);
   background-color: var(--blue);
   border: 2px solid var(--black);
 }
@@ -597,25 +598,25 @@
 }
 
 .confirm_undo_modal_btn.confirm, .confirm_restart_modal_btn.confirm {
-  color: black;
+  color: var(--black);
   background-color: var(--light-green);
 }
 
 .confirm_undo_modal_btn.confirm:hover, .confirm_restart_modal_btn.confirm:hover {
   color: var(--white);
   background-color: var(--blue);
-  border: 2px solid black;
+  border: 2px solid var(--black);
 }
 
 .confirm_undo_modal_btn.cancel, .confirm_restart_modal_btn.cancel {
-  color: black;
+  color: var(--black);
   background-color: var(--light-red);
 }
 
 .confirm_undo_modal_btn.cancel:hover, .confirm_restart_modal_btn.cancel:hover {
   color: var(--white);
   background-color: var(--blue);
-  border: 2px solid black;
+  border: 2px solid var(--black);
 }
 
 .trade_modal {
@@ -667,7 +668,7 @@
 }
 
 .trade_team {
-  color: black;
+  color: var(--black);
   background-color: var(--white);
   border: 2px solid var(--black);
   border-radius: 8px;
@@ -717,7 +718,7 @@
 
 .trade_pick_btn {
   font-size: 0.8rem;
-  color: black;
+  color: var(--black);
   background-color: var(--light-yellow);
   border: 2px solid var(--black);
   width: 70px;
@@ -726,14 +727,14 @@
 }
 
 .trade_pick_btn:hover {
-  color: white;
+  color: var(--white);
   background-color: var(--light-blue);
   border: 2px solid var(--black);
 }
 
 .trade_pick_btn.selected {
   font-weight: bold;
-  color: white;
+  color: var(--white);
   background-color: var(--blue);
   border: 2px solid var(--black);
 }
@@ -821,6 +822,7 @@
   text-align: left;
   margin-top: 10px;
   padding: 10px;
+  overflow: visible;
 }
 
 .draft_details h3 {
@@ -829,10 +831,42 @@
   margin-bottom: 15px;
 }
 
+.mute_btn_wrapper {
+  background-color: var(--light-red);
+  border: 2px solid var(--black);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--black);
+  width: 3%;
+  height: 5%;
+  display: flex;
+  padding: 2px;
+  position: absolute;
+  left: 300px;
+  bottom: 50px;
+  transition: background-color 0.2s ease;
+}
+
+.mute_btn {
+  width: 100%;
+  height: 100%;
+  transition: filter 0.2s ease;
+  filter: brightness(0) saturate(100%);
+}
+
+.mute_btn_wrapper:hover {
+  background-color: var(--blue);
+  border: 2px solid var(--white);
+  cursor: pointer;
+}
+
+.mute_btn_wrapper:hover .mute_btn {
+  filter: invert(100%);
+}
+
 /* Draft - Big Board */
 
 .big_board {
-  color: black;
+  color: var(--black);
   background-color: var(--green);
   border: 2px solid var(--black);
   box-shadow: 6px 6px 0 var(--black);
@@ -850,7 +884,7 @@
 .pick_timer {
   font-size: 1.2rem;
   font-weight: bold;
-  color: white;
+  color: var(--white);
   background-color: var(--light-blue);
   border: 4px solid var(--blue);
   border-radius: 50%;
@@ -903,12 +937,12 @@
 }
 
 .position_filter:hover .select__single-value, .position_filter:hover .select__dropdown-indicator, .position_filter:focus .select__single-value, .position_filter:focus .select__dropdown-indicator {
-  color: white !important;
+  color: var(--white) !important;
 }
 
 .position_filter .select__control--is-focused .select__single-value,
 .position_filter .select__control--menu-is-open .select__single-value {
-  color: white !important;
+  color: var(--white) !important;
 }
 
 .player_search_input {
@@ -993,7 +1027,7 @@
 }
 
 .player_position {
-  color: black;
+  color: var(--black);
   font-size: 0.7rem;
   font-weight: bold;
   background-color: var(--yellow);
@@ -1008,7 +1042,7 @@
 }
 
 .player_rank {
-  color: black;
+  color: var(--black);
   font-size: 0.7rem;
   font-weight: bold;
   background-color: var(--red);
@@ -1305,7 +1339,7 @@
 
 .share_btn_wrapper:hover {
   background-color: var(--blue);
-  border: 2px solid black;
+  border: 2px solid var(--black);
   cursor: pointer;
 }
 
@@ -1318,9 +1352,9 @@
   font-weight: normal;
   color: var(--white);
   background-color: var(--light-blue);
-  border: 2px solid black;
+  border: 2px solid var(--black);
   border-radius: 8px;
-  box-shadow: 4px 4px 0 black;
+  box-shadow: 4px 4px 0 var(--black);
   text-align: left;
   line-height: 1.7;
   width: 140px;
@@ -1353,11 +1387,11 @@
 .results_draft_btn {
   font-size: 0.85rem;
   font-weight: bold;
-  color: black;
+  color: var(--black);
   background-color: var(--light-red);
-  border: 2px solid black;
+  border: 2px solid var(--black);
   border-radius: 6px;
-  box-shadow: 4px 4px 0 black;
+  box-shadow: 4px 4px 0 var(--black);
   flex: 1 0 48%;
   padding: 6px 8px;
   cursor: pointer;
@@ -1365,18 +1399,18 @@
 }
 
 .results_draft_btn:hover {
-  color: white;
+  color: var(--white);
   background-color: var(--blue);
-  border: 2px solid black;
+  border: 2px solid var(--black);
 }
 
 /* Results - Results */
 
 .results {
-  color: black;
+  color: var(--black);
   background-color: var(--green);
-  border: 2px solid black;
-  box-shadow: 6px 6px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 6px 6px 0 var(--black);
   width: 99%;
   height: 91%;
   display: flex;
@@ -1389,7 +1423,7 @@
 
 .results_tabs {
   background: var(--orange);
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--black);
   min-height: 40px;
   display: flex;
   /* justify-content: space-between; */
@@ -1404,7 +1438,7 @@
 
 .tab {
   font-weight: bold;
-  color: black;
+  color: var(--black);
   background-color: var(--orange);
   border-top: 2px solid transparent;
   border-bottom: 2px solid transparent;
@@ -1439,18 +1473,18 @@
   font-weight: bold;
   color: var(--white);
   background-color: var(--blue);
-  border: 2px solid black;
-  box-shadow: 4px 4px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 4px 4px 0 var(--black);
   margin-top: 0px;
   margin-bottom: 20px;
   padding: 10px 20px;
 }
 
 .results_pick {
-  color: black;
+  color: var(--black);
   background-color: var(--white);
-  border: 2px solid black;
-  box-shadow: 4px 4px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 4px 4px 0 var(--black);
   width: 100%;
   height: 60px;
   display: flex;
@@ -1507,8 +1541,8 @@
   font-size: 0.7rem;
   font-weight: bold;
   background-color: var(--yellow);
-  border: 2px solid black;
-  box-shadow: 3px 3px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
   min-width: 15px;
   height: 10px;
   padding: 3px 8px 8px 8px;
@@ -1521,8 +1555,8 @@
   font-size: 0.7rem;
   font-weight: bold;
   background-color: var(--red);
-  border: 2px solid black;
-  box-shadow: 3px 3px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
   min-width: 15px;
   height: 10px;
   padding: 3px 8px 8px 8px;
@@ -1547,8 +1581,8 @@
 .view_toggle {
   width: 150px;
   background-color: var(--light-orange);
-  border: 2px solid black;
-  box-shadow: 3px 3px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
   padding: 0;
   display: flex;
   /* position: absolute;
@@ -1559,7 +1593,7 @@
 }
 
 .switch_option {
-  color: black;
+  color: var(--black);
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -1581,7 +1615,7 @@
 }
 
 .switch_option.list {
-  border-right: 1px solid black;
+  border-right: 1px solid var(--black);
   /* border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
   border-top-right-radius: 0;
@@ -1590,7 +1624,7 @@
 }
 
 .switch_option.grid {
-  border-left: 1px solid black;
+  border-left: 1px solid var(--black);
   /* border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   border-top-left-radius: 0;
@@ -1600,8 +1634,8 @@
 .round_nav {
   width: 200px;
   background-color: var(--yellow);
-  border: 2px solid black;
-  box-shadow: 3px 3px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
   margin-right: 10px;
   padding: 0;
   display: flex;
@@ -1616,7 +1650,7 @@
 
 .round_arrow {
   font-size: 1.3rem;
-  color: black;
+  color: var(--black);
   background-color: transparent;
   border: none;
   /* border: 2px solid black; */
@@ -1704,8 +1738,8 @@
   font-size: 0.7rem;
   font-weight: bold;
   background-color: var(--red);
-  border: 2px solid black;
-  box-shadow: 3px 3px 0 black;
+  border: 2px solid var(--black);
+  box-shadow: 3px 3px 0 var(--black);
   height: 10px;
   position: relative;
   bottom: 30px;
