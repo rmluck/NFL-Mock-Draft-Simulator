@@ -26,13 +26,13 @@ function Home() {
         fetchTeams();
     }, []);
 
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add("dark_mode");
-        } else {
-            document.documentElement.classList.remove("dark_mode");
-        }
-    }, [darkMode]);
+    // useEffect(() => {
+    //     if (darkMode) {
+    //         document.documentElement.classList.add("dark_mode");
+    //     } else {
+    //         document.documentElement.classList.remove("dark_mode");
+    //     }
+    // }, [darkMode]);
 
     const handleToggleTeam = (teamId) => {
         setSelectedTeams((prev) => prev.includes(teamId) ? prev.filter((id) => id !== teamId) : [...prev, teamId]);
@@ -87,7 +87,7 @@ function Home() {
     return (
         <div className="home_container">
             <header className="home_header">
-                <img src="/site/main_logo.png" alt="NFL Mock Draft Simulator logo" id="main_logo" />
+                <img src={!darkMode ? "/site/main_logo.png" : "/site/main_logo_dark_mode.png"} alt="NFL Mock Draft Simulator logo" id="main_logo" />
             </header>
 
             <main className="home_main">
@@ -116,9 +116,9 @@ function Home() {
                             <option value={2025}>2025</option>
                         </select>
                     </label>
-                    <button className="dark_mode_btn" onClick={() => setDarkMode(prev => !prev)}>
+                    {/* <button className="dark_mode_btn" onClick={() => setDarkMode(prev => !prev)}>
                         {darkMode ? "Light Mode" : "Dark Mode"}
-                    </button>
+                    </button> */}
                     <br />
 
                     <div className="num_rounds">
