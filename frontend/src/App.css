@@ -353,14 +353,13 @@
 }
 
 .draft_main {
-  height: 85vh;
-  min-height: 200px;
+  height: calc(100vh - 120px);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
   padding: 0 20px;
-  margin-top: 15vh;
+  margin-top: 120px;
 }
 
 /* Draft - Picks */
@@ -824,8 +823,10 @@
   box-shadow: 4px 4px 0 var(--black);
   line-height: 0.3;
   text-align: left;
+  height: 230px;
   margin-top: 10px;
   padding: 10px;
+  position: relative;
   overflow: visible;
 }
 
@@ -840,13 +841,13 @@
   border: 2px solid var(--black);
   border-radius: 6px;
   box-shadow: 4px 4px 0 var(--black);
-  width: 3%;
-  height: 5%;
+  width: 50px;
+  height: 50px;
   display: flex;
   padding: 2px;
   position: absolute;
-  left: 300px;
-  bottom: 50px;
+  right: -10px;
+  bottom: -10px;
   transition: background-color 0.2s ease;
 }
 
@@ -1307,16 +1308,16 @@
 
 .results_main {
   width: 96%;
-  height: 85vh;
+  height: calc(100vh - 125px);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   gap: 20px;
   padding-left: 2%;
   padding-right: 2%;
-  margin-top: 15vh;
+  margin-top: 125px;
   overflow-x: hidden;
-  }
+}
 
 /* Results - Header + Export */
 

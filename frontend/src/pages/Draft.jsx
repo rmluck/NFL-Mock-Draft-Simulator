@@ -638,12 +638,7 @@ function Draft() {
                             </div>
                         </div>
                     )}
-                    
-                    <button className={`mute_btn_wrapper ${soundsMuted ? "muted" : "unmuted"}`} onClick={() => setSoundsMuted(prev => !prev)}>
-                            <img src={soundsMuted ? "/site/unmute.svg" : "/site/mute.svg"} alt={soundsMuted ? "Unmute" : "Mute"} className="mute_btn" />
-                        </button>
                     <div className="draft_details">
-                        
                         <h3>Details</h3>
                         <br />
                         <p><strong>Name</strong></p>
@@ -655,7 +650,9 @@ function Draft() {
                         <p><strong>Rounds</strong></p>
                         <p>{draft.num_rounds}</p>
                         <br />
-                        
+                        <button className={`mute_btn_wrapper ${soundsMuted ? "muted" : "unmuted"}`} onClick={() => setSoundsMuted(prev => !prev)}>
+                            <img src={soundsMuted ? "/site/unmute.svg" : "/site/mute.svg"} alt={soundsMuted ? "Unmute" : "Mute"} className="mute_btn" />
+                        </button>
                     </div>
                 </aside>
 
