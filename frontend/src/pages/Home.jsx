@@ -153,7 +153,7 @@ function Home() {
                         {teams.map((team) => (
                             <button key={team.id} onClick={() => handleToggleTeam(team.id)} className={`select_team_btn ${selectedTeams.includes(team.id) ? "selected" : ""}`}>
                                 <div className="select_team_logo_wrapper">
-                                    <img src={`/logos/nfl/${team.name}.png`} alt={`${team.name} logo`} className="select_team_logo" />
+                                    <img src={`/logos/nfl/${team.name.toLowerCase()}.png`} alt={`${team.name} logo test`} className="select_team_logo" />
                                 </div>
                                 <span className="select_team_name">{team.name}</span>
                             </button>
