@@ -526,10 +526,6 @@
   flex-shrink: 0;
 }
 
-.draft_tools h2 {
-  margin-bottom: 30px;
-}
-
 .draft_tool {
   font-weight: bold;
   color: var(--black);
@@ -537,7 +533,7 @@
   border: 2px solid var(--black);
   box-shadow: 4px 4px 0 var(--black);
   width: 100%;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -836,18 +832,39 @@
   margin-bottom: 15px;
 }
 
-.mute_btn_wrapper {
-  background-color: var(--light-red);
+.auto_pick_speed_wrapper {
+  font-size: 0.9rem;
+  font-weight: bold;
+  background-color: var(--light-yellow);
   border: 2px solid var(--black);
   border-radius: 6px;
   box-shadow: 4px 4px 0 var(--black);
-  width: 50px;
-  height: 50px;
+  width: 150px;
+  height: 40px;
+  padding: 15px 0 0 10px;
+  position: absolute;
+  right: 60px;
+  bottom: -40px;
+  transition: background-color 0.2s ease;
+}
+
+.auto_pick_speed_label, .auto_pick_speed_slider {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.mute_btn_wrapper {
+  background-color: var(--light-yellow);
+  border: 2px solid var(--black);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--black);
+  width: 60px;
+  height: 60px;
   display: flex;
   padding: 2px;
   position: absolute;
   right: -10px;
-  bottom: -10px;
+  bottom: -40px;
   transition: background-color 0.2s ease;
 }
 
@@ -860,7 +877,7 @@
 
 .mute_btn_wrapper:hover {
   background-color: var(--blue);
-  border: 2px solid var(--white);
+  border: 2px solid var(--black);
   cursor: pointer;
 }
 

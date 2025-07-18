@@ -38,6 +38,7 @@ function Draft() {
     const userInteractedRef = useRef(false);
     const [tradeEvaluation, setTradeEvaluation] = useState(null);
     const [soundsMuted, setSoundsMuted] = useState(false);
+    const [autoPickDelay, setAutoPickDelay] = useState(1000);
     const [tradedPicks, setTradedPicks] = useState({
         currentTeam: [],
         tradePartner: []
@@ -202,7 +203,7 @@ function Draft() {
                 hasAutoPickedRef.current = true;
                 setTimeout(() => {
                     handleAutoSelectPlayer(currentPick, [...filteredPlayers]);
-                }, 1000);
+                }, autoPickDelay);
             }
         }
 
@@ -549,13 +550,9 @@ function Draft() {
                 <aside className="draft_tools">
                     <h2>Draft Tools</h2>
                     <button className="draft_tool" onClick={initiateUndoPick}>Undo Pick</button>
-                    <br />
                     <button className="draft_tool" onClick={() => setShowTradeModal(true)}>Trade Pick</button>
-                    <br />
                     <button className="draft_tool" onClick={() => setPaused(prev => !prev)}>{paused ? "Resume" : "Pause"} Draft</button>
-                    <br />
                     <button className="draft_tool" onClick={() => setShowConfirmRestartModal(true)}>Restart Draft</button>
-                    <br />
                     {showConfirmUndoModal && (
                         <div className="confirm_undo_modal">
                             <div className="confirm_undo_modal_content">
@@ -650,6 +647,10 @@ function Draft() {
                         <p><strong>Rounds</strong></p>
                         <p>{draft.num_rounds}</p>
                         <br />
+                        <div className="auto_pick_speed_wrapper">
+                            <label className="auto_pick_speed_label">Pick Speed</label>
+                            <input className="auto_pick_speed_slider" type="range" min={200} max={5000} step={100} value={5200 - autoPickDelay} onChange={(e) => setAutoPickDelay(5200 - parseInt(e.target.value))} />
+                        </div>
                         <button className={`mute_btn_wrapper ${soundsMuted ? "muted" : "unmuted"}`} onClick={() => setSoundsMuted(prev => !prev)}>
                             <img src={soundsMuted ? "/site/unmute.svg" : "/site/mute.svg"} alt={soundsMuted ? "Unmute" : "Mute"} className="mute_btn" />
                         </button>
