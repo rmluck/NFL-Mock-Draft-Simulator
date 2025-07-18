@@ -8,7 +8,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="*", # change to =["http://localhost:3000", "http://localhost:5173"] after dev is done
+    allow_origins="https://nfl-mock-draft-simulator-frontend.onrender.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
