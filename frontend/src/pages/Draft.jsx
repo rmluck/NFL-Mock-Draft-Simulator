@@ -28,7 +28,7 @@ function Draft() {
     const [timeLeft, setTimeLeft] = useState(60);
     const timerRef = useRef(null);
     const isUserTurn = currentPick && userControlledTeams.includes(currentPick.team.id);
-    const hasAutoPickedRef = useRef(false);
+    const autoPickInProgressRef = useRef(null);
     const [paused, setPaused] = useState(false);
     const previousPickIdRef = useRef(null);
     const draftPickSoundRef = useRef(null);
@@ -177,7 +177,7 @@ function Draft() {
             return;
         }
 
-        hasAutoPickedRef.current = false;
+        autoPickInProgressRef.current = null;
 
         if (isUserPick) {
             timerRef.current = setInterval(() => {
@@ -189,8 +189,7 @@ function Draft() {
 
                     if (prev <= 1) {
                         clearInterval(timerRef.current);
-                        if (!hasAutoPickedRef.current) {
-                            hasAutoPickedRef.current = true;
+                        if (autoPickInProgressRef.current !== currentPick.id) {
                             handleAutoSelectPlayer(currentPick, [...filteredPlayers]);
                         }
                         return 0;
@@ -199,8 +198,7 @@ function Draft() {
                 });
             }, 1000);
         } else if (!currentPick.player && filteredPlayers.length > 0) {
-            if (!hasAutoPickedRef.current && !paused) {
-                hasAutoPickedRef.current = true;
+            if (autoPickInProgressRef.current !== currentPick.id && !paused) {
                 setTimeout(() => {
                     handleAutoSelectPlayer(currentPick, [...filteredPlayers]);
                 }, autoPickDelay);
@@ -274,22 +272,74 @@ function Draft() {
         } else if (availablePlayers.length === 0) {
             alert("No players available to auto-select.");
             return;
+        } else if (autoPickInProgressRef.current) {
+            return;
+        }
+        autoPickInProgressRef.current = pick.id;
+
+        if (pick.player) {
+            autoPickInProgressRef.current = null;
+            return;
         }
 
-        const bestPlayerAvailable = availablePlayers[0];
+        const teamNeeds = {};
+        if (currentTeam) {
+            Object.entries(currentTeam).forEach(([position, urgency]) => {
+                if (position !== "id" && position !== "name") {
+                    teamNeeds[position.toLowerCase()] = 1 + urgency * 0.2;
+                }
+            });
+        }
+        console.log(`${currentTeam.name} Needs: `, teamNeeds);
+
+        const positionsDrafted = new Set(teamPicks.filter(pick => pick.player).map(pick => pick.player.position.toLowerCase()));
+
+        const poolSize = pick.draft_pick.round >= 4 ? 40 : 20;
+        const candidates = availablePlayers.slice(0, poolSize);
+        const scoredCandidates = candidates.map(player => {
+            let positionWeight = teamNeeds[player.position.toLowerCase()] || 1.0;
+
+            if (player.position === "QB") {
+                const qbNeed = teamNeeds["qb"] || 0;
+
+                if (qbNeed >= 8) {
+                    positionWeight *= 2;
+                } else if (qbNeed <= 3) {
+                    positionWeight *= 0.5;
+                }
+            }
+            if (positionsDrafted.has(player.position.toLowerCase())) {
+                positionWeight *= 0.35;
+            }
+
+            const randomness = Math.random() * (pick.draft_pick.round >= 4 ? 0.1 : 0.03) + (pick.draft_pick.round >= 4 ? 0.9 : 0.97);
+            const adjustedScore = player.rank * (1 / positionWeight) * randomness;
+            return { ...player, adjustedScore };
+        });
+        scoredCandidates.sort((a, b) => a.adjustedScore - b.adjustedScore);
+        console.log(`Scored Candidates for ${currentTeam.name}: `, scoredCandidates.map(player => `${player.name} (${player.position}) - Score: ${player.adjustedScore.toFixed(2)}`));
+
+        const randomIndex = Math.floor(Math.random() * Math.min(5, scoredCandidates.length));
+        console.log(`Randomly selected index: ${randomIndex} from candidates of size ${scoredCandidates.length}`);
+        const randomnessFactor = pick.draft_pick.round >= 4 ? 0.15 : 0.05;
+        const selectedPlayer = Math.random() < randomnessFactor ? availablePlayers[0] : scoredCandidates[randomIndex];
+        console.log(`Selected Player: ${selectedPlayer.name} (${selectedPlayer.position}) - Rank: ${selectedPlayer.rank}`);
+
         try {
             await axios.put(`/api/mock_draft_picks/${pick.id}`, {
-                player_id: bestPlayerAvailable.id,
+                player_id: selectedPlayer.id,
             });
 
-            const updatedPick = {...pick, player: bestPlayerAvailable};
+            const updatedPick = {...pick, player: selectedPlayer};
             setPicks(prevPicks => prevPicks.map(p => p.id === updatedPick.id ? updatedPick : p));
-            setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== bestPlayerAvailable.id));
+            setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== selectedPlayer.id));
         } catch (err) {
             console.error("Failed to auto-select player: ", err);
             alert("An error occurred while auto-selecting the player. Please try again.");
+        } finally {
+            autoPickInProgressRef.current = null;
         }
-    }
+    };
 
     const initiateUndoPick = () => {
         const lastCompletedPickIndex = [...picks].reverse().findIndex(pick => pick.player);
