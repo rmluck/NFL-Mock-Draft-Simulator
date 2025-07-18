@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Home() {
+    const apiURL = import.meta.env.VITE_API_URL;
     const [name, setName] = useState("");
     const [numRounds, setNumRounds] = useState(1);
     const [year, setYear] = useState(2025);
@@ -17,7 +18,7 @@ function Home() {
     useEffect(() => {
         const fetchTeams = async () => {
             try {
-                const response = await axios.get(`/api/teams`);
+                const response = await axios.get(`/${apiURL}/teams`);
                 setTeams(response.data);
             } catch (err) {
                 console.error("Failed to fetch teams");
@@ -51,7 +52,7 @@ function Home() {
         setError("");
 
         try {
-            const result = await axios.post(`/api/mock_drafts`, {
+            const result = await axios.post(`/${apiURL}/mock_drafts`, {
                 name: name || "Mock Draft",
                 num_rounds: numRounds,
                 year: year
@@ -59,16 +60,16 @@ function Home() {
             const createdDraft = result.data;
 
             for (const teamId of selectedTeams) {
-                await axios.post(`/api/user_controlled_teams`, {
+                await axios.post(`/${apiURL}/user_controlled_teams`, {
                     mock_draft_id: createdDraft.id,
                     team_id: teamId
                 });
             }
 
-            const retrieved_picks = await axios.get(`/api/draft_picks/by_rounds/`, { params: { num_rounds: numRounds } });
+            const retrieved_picks = await axios.get(`/${apiURL}/draft_picks/by_rounds/`, { params: { num_rounds: numRounds } });
 
             for (const pick of retrieved_picks.data) {
-                await axios.post(`/api/mock_draft_picks`, {
+                await axios.post(`/${apiURL}/mock_draft_picks`, {
                     mock_draft_id: createdDraft.id,
                     draft_pick_id: pick.id,
                     team_id: pick.current_team_id,

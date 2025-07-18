@@ -5,6 +5,7 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 
 function Results() {
+    const apiURL = import.meta.env.VITE_API_URL;
     const { draftId } = useParams();
     const [draft, setDraft] = useState(null);
     const [picks, setPicks] = useState([]);
@@ -124,9 +125,9 @@ function Results() {
     useEffect(() => {
         const fetchData = async () => {
             const [picksResponse, userControlledTeamsResponse, draftResponse] = await Promise.all([
-                axios.get(`/api/mock_draft_picks/${draftId}`),
-                axios.get(`/api/user_controlled_teams/${draftId}`),
-                axios.get(`/api/mock_drafts/${draftId}`)
+                axios.get(`/${apiURL}/mock_draft_picks/${draftId}`),
+                axios.get(`/${apiURL}/user_controlled_teams/${draftId}`),
+                axios.get(`/${apiURL}/mock_drafts/${draftId}`)
             ]);
 
             const picks = picksResponse.data.sort((a, b) => {
