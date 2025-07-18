@@ -164,7 +164,7 @@ function Results() {
         <div className="results_container">
             <header className="results_header">
                 <Link to="/" className="logo_link">
-                    <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="results_logo" />
+                    <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" className="results_logo" />
                 </Link>
                 <h1>Draft Results</h1>
                 <div id="share_toast" className="share_toast hidden">Link copied to clipboard!</div>

@@ -87,7 +87,7 @@ function Home() {
     return (
         <div className="home_container">
             <header className="home_header">
-                <img src={!darkMode ? "/site/main_logo.png" : "/site/main_logo_dark_mode.png"} alt="NFL Mock Draft Simulator logo" id="main_logo" />
+                <img src={!darkMode ? "/site/main_logo.png" : "/site/main_logo_dark_mode.png"} alt="NFL Mock Draft Simulator logo" className="main_logo" />
             </header>
 
             <main className="home_main">
@@ -133,7 +133,7 @@ function Home() {
                     </div>
                     <br />
 
-                    <button id="start_btn" onClick={handleStartDraft} disabled={loading}>
+                    <button className="start_draft_btn" onClick={handleStartDraft} disabled={loading}>
                         {loading ? "Creating..." : "Start Draft"}
                     </button>
 
@@ -143,7 +143,7 @@ function Home() {
                 <section className="team_selection">
                     <div className="team_selection_grid_header">
                         <h2>Select Teams to Control</h2>
-                        <button onClick={handleSelectAll} id="select_all_btn">
+                        <button onClick={handleSelectAll} className="select_all_btn">
                             {selectedTeams.length === teams.length ? "Deselect All" : "Select All"}
                         </button>
                     </div>

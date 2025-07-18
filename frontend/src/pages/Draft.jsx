@@ -493,7 +493,7 @@ function Draft() {
         <div className="draft_container">
             <header className="draft_header">
                 <Link to="/" className="logo_link">
-                    <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" id="draft_logo" />
+                    <img src="/site/alternate_logo.png" alt="NFL Mock Draft Simulator logo" className="draft_logo" />
                 </Link>
                 
                 <div className="draft_picks_wrapper">
