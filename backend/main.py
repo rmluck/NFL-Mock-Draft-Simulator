@@ -8,7 +8,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://nfl-mock-draft-simulator-frontend.onrender.com"],
+    allow_origins=["nfl-mock-draft-simulator.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
