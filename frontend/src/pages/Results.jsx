@@ -125,9 +125,9 @@ function Results() {
     useEffect(() => {
         const fetchData = async () => {
             const [picksResponse, userControlledTeamsResponse, draftResponse] = await Promise.all([
-                axios.get(`/${apiURL}/mock_draft_picks/${draftId}`),
-                axios.get(`/${apiURL}/user_controlled_teams/${draftId}`),
-                axios.get(`/${apiURL}/mock_drafts/${draftId}`)
+                axios.get(`${apiURL}/mock_draft_picks/${draftId}`),
+                axios.get(`${apiURL}/user_controlled_teams/${draftId}`),
+                axios.get(`${apiURL}/mock_drafts/${draftId}`)
             ]);
 
             const picks = picksResponse.data.sort((a, b) => {

@@ -85,7 +85,7 @@ function Draft() {
         const fetchDraft = async () => {
             try {
                 if (!draft) {
-                    const draft_result = await axios.get(`/${apiURL}/mock_drafts/${draftId}`);
+                    const draft_result = await axios.get(`${apiURL}/mock_drafts/${draftId}`);
                     setDraft(draft_result.data);
                 }
             } catch (err) {
@@ -100,16 +100,16 @@ function Draft() {
             try {
                 if (!draft) return;
 
-                const picks_result = await axios.get(`/${apiURL}/mock_draft_picks/${draftId}`);
+                const picks_result = await axios.get(`${apiURL}/mock_draft_picks/${draftId}`);
                 const sortedPicks = picks_result.data.sort((a, b) => {
                     return a.draft_pick.pick_number - b.draft_pick.pick_number;
                 });
                 setPicks(sortedPicks);
 
-                const user_controlled_teams_result = await axios.get(`/${apiURL}/user_controlled_teams/${draftId}`);
+                const user_controlled_teams_result = await axios.get(`${apiURL}/user_controlled_teams/${draftId}`);
                 setUserControlledTeams(user_controlled_teams_result.data.map(team => team.team_id));
 
-                const players_result = await axios.get(`/${apiURL}/players/by_year/`, { params: { year: draft.year } });
+                const players_result = await axios.get(`${apiURL}/players/by_year/`, { params: { year: draft.year } });
                 const pickedPlayers = sortedPicks.filter(pick => pick.player).map(pick => pick.player.id);
                 const availablePlayers = players_result.data.filter(player => !pickedPlayers.includes(player.id));
                 setPlayers(availablePlayers);
@@ -251,7 +251,7 @@ function Draft() {
         setIsSelecting(true);
 
         try {
-            await axios.put(`/${apiURL}/mock_draft_picks/${currentPick.id}`, {
+            await axios.put(`${apiURL}/mock_draft_picks/${currentPick.id}`, {
                 player_id: selectedPlayer.id
             });
 
@@ -327,7 +327,7 @@ function Draft() {
         console.log(`Selected Player: ${selectedPlayer.name} (${selectedPlayer.position}) - Rank: ${selectedPlayer.rank}`);
 
         try {
-            await axios.put(`/${apiURL}/mock_draft_picks/${pick.id}`, {
+            await axios.put(`${apiURL}/mock_draft_picks/${pick.id}`, {
                 player_id: selectedPlayer.id,
             });
 
@@ -356,7 +356,7 @@ function Draft() {
 
     const confirmUndoPick = async () => {
         try {
-            await axios.put(`/${apiURL}/mock_draft_picks/${pickToUndo.id}`, { player_id: null });
+            await axios.put(`${apiURL}/mock_draft_picks/${pickToUndo.id}`, { player_id: null });
             setPlayers(prev => [...prev, pickToUndo.player].sort((a, b) => a.rank - b.rank));
             setPicks(prev => prev.map(pick => pick.id === pickToUndo.id ? {...pick, player: null, player_id: null} : pick));
         } catch (err) {
@@ -436,14 +436,14 @@ function Draft() {
 
         try {
             for (const pickId of tradedPicks.currentTeam) {
-                axios.put(`/${apiURL}/mock_draft_picks/${pickId}`, {
+                axios.put(`${apiURL}/mock_draft_picks/${pickId}`, {
                     team_id: tradePartner.id
                 });
 
                 setPicks(prevPicks => prevPicks.map(pick => pick.id === pickId ? {...pick, team: tradePartner } : pick));
             }
             for (const pickId of tradedPicks.tradePartner) {
-                axios.put(`/${apiURL}/mock_draft_picks/${pickId}`, {
+                axios.put(`${apiURL}/mock_draft_picks/${pickId}`, {
                     team_id: currentTeam.id
                 });
 
@@ -467,7 +467,7 @@ function Draft() {
 
         const fetchAllPlayers = async () => {
             try {
-                const players_result = await axios.get(`/${apiURL}/players/by_year/`, { params: { year: draft.year } });
+                const players_result = await axios.get(`${apiURL}/players/by_year/`, { params: { year: draft.year } });
                 setPlayers(players_result.data.sort((a, b) => a.rank - b.rank));
             } catch (err) {
                 console.error("Failed to fetch players:", err);
