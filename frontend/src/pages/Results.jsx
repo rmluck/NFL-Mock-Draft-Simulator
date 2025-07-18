@@ -205,7 +205,7 @@ function Results() {
 
                                         <div className="results_pick">
                                             <div className="results_pick_logo_wrapper">
-                                                <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="results_pick_logo" />
+                                                <img src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`} alt={pick.team.name} className="results_pick_logo" />
                                             </div>
                                             <div className="results_pick_details">
                                                 <span className="results_pick_number">{pick.draft_pick.round}.{pick.draft_pick.pick_number}</span>
@@ -226,7 +226,7 @@ function Results() {
                             return picksByRound[currentRoundIndex].map(pick => (
                                 <div key={pick.id} className="results_pick grid">
                                     <div className="results_pick_logo_wrapper grid">
-                                        <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="results_pick_logo grid" />
+                                        <img src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`} alt={pick.team.name} className="results_pick_logo grid" />
                                     </div>
                                     <div className="results_pick_details grid">
                                         <div className="results_pick_text_wrapper grid">

@@ -556,7 +556,7 @@ function Draft() {
                                         <p ref={onTheClockRef} className="on_the_clock_header">On the<br />Clock</p>
                                         <div ref={el => pickRefs.current[pick.id] = el} className={`draft_pick on_the_clock`}>
                                             <div className="pick_team_logo_wrapper">
-                                                <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
+                                                <img src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`} alt={pick.team.name} className="pick_team_logo" />
                                             </div>
                                             <div className="pick_text_wrapper">
                                                 <div className="pick_team_name">{pick.team.name}</div>
@@ -574,7 +574,7 @@ function Draft() {
                             return (
                                 <div key={pick.id} ref={el => pickRefs.current[pick.id] = el} className={`draft_pick ${pick.player ? "picked" : "future"}`}>
                                     <div className="pick_team_logo_wrapper">
-                                        <img src={`/logos/nfl/${pick.team.name}.png`} alt={pick.team.name} className="pick_team_logo" />
+                                        <img src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`} alt={pick.team.name} className="pick_team_logo" />
                                     </div>
                                     <div className="pick_text_wrapper">
                                         <div className={`pick_team_name ${pick.player ? 'picked' : ''}`}>
@@ -627,7 +627,7 @@ function Draft() {
                                     <div className="trade_team_column">
                                         <div className="trade_team">
                                             <div className="trade_team_logo_wrapper">
-                                                <img src={`/logos/nfl/${currentTeam.name}.png`} alt={currentTeam.name} className="trade_team_logo" />
+                                                <img src={`/logos/nfl/${currentTeam.name.toLowerCase()}.png`} alt={currentTeam.name} className="trade_team_logo" />
                                             </div>
                                             <div className="trade_team_name">
                                                 {currentTeam.name}
@@ -646,7 +646,7 @@ function Draft() {
                                             <>
                                                 <div className="trade_team">
                                                     <div className="trade_team_logo_wrapper">
-                                                        <img src={`/logos/nfl/${tradePartner.name}.png`} alt={tradePartner.name} className="trade_team_logo" />
+                                                        <img src={`/logos/nfl/${tradePartner.name.toLowerCase()}.png`} alt={tradePartner.name} className="trade_team_logo" />
                                                     </div>
                                                     <div className="trade_team_name">
                                                         {tradePartner.name}
@@ -755,7 +755,7 @@ function Draft() {
                         <div className="team">
                             <div className="team_profile_header">
                                 <div className="team_profile_logo_wrapper">
-                                    <img src={`/logos/nfl/${currentTeam.name}.png`} alt={currentTeam.name} className="team_profile_logo" />
+                                    <img src={`/logos/nfl/${currentTeam.name.toLowerCase()}.png`} alt={currentTeam.name} className="team_profile_logo" />
                                 </div>
                                 <h2 className="team_name">{currentTeam.name}</h2>
                             </div>
