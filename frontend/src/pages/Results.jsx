@@ -190,7 +190,7 @@ function Results() {
                 teamsMap[teamId].picks.push(pick);
             });
 
-            setPicks(picksResponse.data);
+            setPicks(picks);
             setTeams(Object.values(teamsMap));
             setUserControlledTeams(userControlledTeams);
             setDraft(draftResponse.data);

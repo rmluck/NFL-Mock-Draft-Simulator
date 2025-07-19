@@ -102,10 +102,11 @@ function Draft() {
     const pickRefs = useRef({});
     const previousPickIdRef = useRef(null);
     const timerRef = useRef(null);
+    const timeoutRef = useRef(null);
     const onTheClockRef = useRef(null);
     const onTheClockSoundRef = useRef(null);
     const draftPickSoundRef = useRef(null);
-    const autoPickInProgressRef = useRef(null);
+    const autoPickInProgressRef = useRef( {id: null, active: false} );
 
     // Fetch draft data when component mounts
     useEffect(() => {
@@ -130,18 +131,22 @@ function Draft() {
                 if (!draft) return;
 
                 // Fetch draft picks and sort by pick number
-                const picks_result = await axios.get(`${apiURL}/mock_draft_picks/${draftId}`);
+                const [picks_result, user_controlled_teams_result, players_result] = await Promise.all([
+                    axios.get(`${apiURL}/mock_draft_picks/${draftId}`),
+                    axios.get(`${apiURL}/user_controlled_teams/${draftId}`),
+                    axios.get(`${apiURL}/players/by_year/`, { params: { year: draft.year } })
+                ]);
+
+                // Process picks
                 const sortedPicks = picks_result.data.sort((a, b) => {
                     return a.draft_pick.pick_number - b.draft_pick.pick_number;
                 });
                 setPicks(sortedPicks);
 
-                // Fetch user-controlled teams
-                const user_controlled_teams_result = await axios.get(`${apiURL}/user_controlled_teams/${draftId}`);
+                // Process user-controlled teams
                 setUserControlledTeams(user_controlled_teams_result.data.map(team => team.team_id));
 
-                // Fetch players for specified year, filter out those already picked
-                const players_result = await axios.get(`${apiURL}/players/by_year/`, { params: { year: draft.year } });
+                // Process players
                 const pickedPlayers = sortedPicks.filter(pick => pick.player).map(pick => pick.player.id);
                 const availablePlayers = players_result.data.filter(player => !pickedPlayers.includes(player.id));
                 setPlayers(availablePlayers);
@@ -220,15 +225,16 @@ function Draft() {
             previousPickIdRef.current = currentPick.id;
         }
 
-        // Clear any existing timer
+        // Clear any existing timer or timeout
         clearInterval(timerRef.current);
+        clearTimeout(timeoutRef.current);
+
+        autoPickInProgressRef.current = {id: null, active: false};
 
         // If the draft is paused, do not start a new timer
         if (paused) {
             return;
         }
-
-        autoPickInProgressRef.current = null;
 
         // Check if user is making the pick
         if (isUserPick) {
@@ -245,8 +251,8 @@ function Draft() {
                     // if time has run out, clear the timer and auto-select player
                     if (prev <= 1) {
                         clearInterval(timerRef.current);
-                        if (autoPickInProgressRef.current !== currentPick.id) {
-                            handleAutoSelectPlayer(currentPick, [...filteredPlayers]);
+                        if (!autoPickInProgressRef.current.active) {
+                            handleAutoSelectPlayer(currentPick);
                         }
                         return 0;
                     }
@@ -254,18 +260,21 @@ function Draft() {
                     return prev - 1;
                 });
             }, 1000); // Update every second
-        } else if (!currentPick.player && filteredPlayers.length > 0) {
+        } else if (!currentPick.player && players.length > 0) {
             // If current pick is not a user pick and there are available players, auto-select a player after a delay
-            if (autoPickInProgressRef.current !== currentPick.id && !paused) {
-                setTimeout(() => {
-                    handleAutoSelectPlayer(currentPick, [...filteredPlayers]);
-                }, autoPickDelay);
-            }
+            timeoutRef.current = setTimeout(() => {
+                if (!autoPickInProgressRef.current.active) {
+                    handleAutoSelectPlayer(currentPick);
+                }
+            }, autoPickDelay);
         }
 
         // Cleanup function to clear the timer when component unmounts or dependencies change
-        return () => clearInterval(timerRef.current);
-    }, [currentPick, userControlledTeams, paused, filteredPlayers]);
+        return () => {
+            clearInterval(timerRef.current);
+            clearTimeout(timeoutRef.current);
+        };
+    }, [currentPick?.id, currentPick, players.length, userControlledTeams, paused]);
 
     // Handle user interaction to enable sounds
     useEffect(() => {
@@ -336,30 +345,21 @@ function Draft() {
     }
 
     // Handle player auto-selection
-    const handleAutoSelectPlayer = async (pick, availablePlayers) => {
-        // Check if there is no current pick, no available playerse, or if auto-pick is already in progress
-        if (!pick) {
-            alert("No pick is currently on the clock.");
+    const handleAutoSelectPlayer = async (pick) => {
+        // Check if there is no current pick, the current pick has already been selected, or if auto-pick is already in progress
+        if (!pick || pick.player) {
+            autoPickInProgressRef.current = {id: null, active: false};
             return;
-        } else if (availablePlayers.length === 0) {
-            alert("No players available to auto-select.");
-            return;
-        } else if (autoPickInProgressRef.current) {
+        } else if (autoPickInProgressRef.current.active && autoPickInProgressRef.current.id === pick.id) {
             return;
         }
 
-        autoPickInProgressRef.current = pick.id;
-
-        // Check if the current pick already has a player selected
-        if (pick.player) {
-            autoPickInProgressRef.current = null;
-            return;
-        }
+        autoPickInProgressRef.current = {id: pick.id, active: true};
 
         // Retrieve current team's positional needs and calculate urgency
         const teamNeeds = {};
-        if (currentTeam) {
-            Object.entries(currentTeam).forEach(([position, urgency]) => {
+        if (pick.team) {
+            Object.entries(pick.team).forEach(([position, urgency]) => {
                 if (position !== "id" && position !== "name") {
                     teamNeeds[position.toLowerCase()] = 1 + urgency * 0.2;
                 }
@@ -371,7 +371,7 @@ function Draft() {
         
         // Gather top candidates from big board based on draft round
         const poolSize = pick.draft_pick.round >= 4 ? 40 : 20;
-        const candidates = availablePlayers.slice(0, poolSize);
+        const candidates = players.slice(0, poolSize);
 
         // Calculate adjusted scores for each candidate
         const scoredCandidates = candidates.map(player => {
@@ -407,24 +407,22 @@ function Draft() {
         // Select random candidate
         const randomIndex = Math.floor(Math.random() * Math.min(5, scoredCandidates.length));
         const randomnessFactor = pick.draft_pick.round >= 4 ? 0.15 : 0.05;
-        const selectedPlayer = Math.random() < randomnessFactor ? availablePlayers[0] : scoredCandidates[randomIndex];
+        const selectedPlayer = Math.random() < randomnessFactor ? scoredCandidates[0] : scoredCandidates[randomIndex];
 
-        // Auto-select player for current pick
-        try {
-            // Wait for player to be auto-selected
-            await axios.put(`${apiURL}/mock_draft_picks/${pick.id}`, {
-                player_id: selectedPlayer.id,
-            });
+        if (selectedPlayer) {
+            try {
+                await axios.put(`${apiURL}/mock_draft_picks/${pick.id}`, {
+                    player_id: selectedPlayer.id
+                });
 
-            // Update current pick with selected player and remove player from big board
-            const updatedPick = {...pick, player: selectedPlayer};
-            setPicks(prevPicks => prevPicks.map(p => p.id === updatedPick.id ? updatedPick : p));
-            setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== selectedPlayer.id));
-        } catch (err) {
-            console.error("Failed to auto-select player: ", err);
-            alert("An error occurred while auto-selecting the player. Please try again.");
-        } finally {
-            autoPickInProgressRef.current = null;
+                const updatedPick = {...pick, player: selectedPlayer};
+                setPicks(prevPicks => prevPicks.map(pick => (pick.id === updatedPick.id ? updatedPick : pick)));
+                setPlayers(prevPlayers => prevPlayers.filter(player => player.id !== selectedPlayer.id));
+            } catch (err) {
+                console.error("Failed to auto-select player: ", err);
+            } finally {
+                autoPickInProgressRef.current = {id: null, active: false};
+            }
         }
     };
 
@@ -520,12 +518,12 @@ function Draft() {
         const difference = Math.abs(team1Total - team2Total);
         const largerTotal = Math.max(team1Total, team2Total);
         const percentDifference = (difference / largerTotal) * 100;
-
+        console.log("Team 1 Total:", team1Total, "Team 2 Total:", team2Total, "Difference:", difference, "Percent Difference:", percentDifference);
         // Determine trade verdict based on percentage difference
         let verdict;
-        if (percentDifference <= 5) {
+        if (percentDifference <= 10) {
             verdict = "Fair";
-        } else if (percentDifference <= 10) {
+        } else if (percentDifference <= 20) {
             verdict = "Acceptable";
         } else {
             verdict = "Lopsided";
@@ -1118,7 +1116,8 @@ function Draft() {
 
                                             {pick.player ? (
                                                 <span className="pick_player">
-                                                    <strong>{pick.player.name}</strong> {pick.player.position} - {pick.player.college}
+                                                    <strong>{pick.player.name}</strong>
+                                                    <br /> {pick.player.position} - {pick.player.college}
                                                 </span>
                                             ) : (
                                                 <span className="pick_empty">

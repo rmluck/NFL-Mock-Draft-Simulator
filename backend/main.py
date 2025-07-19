@@ -16,7 +16,7 @@ app = FastAPI()
 # Set up CORS middleware to allow requests from frontend application
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://nfl-mock-draft-simulator.netlify.app"],
+    allow_origins=["https://nfl-mock-draft-simulator.netlify.app", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
