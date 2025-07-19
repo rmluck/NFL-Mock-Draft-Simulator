@@ -1,3 +1,9 @@
+/*
+    * Defines schema for PostgreSQL database.
+*/
+
+
+-- Create table for players
 CREATE TABLE players (
     id SERIAL PRIMARY KEY,
     player_name VARCHAR(100) NOT NULL,
@@ -7,6 +13,8 @@ CREATE TABLE players (
     year INTEGER NOT NULL
 );
 
+
+-- Create table for teams
 CREATE TABLE teams (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -22,6 +30,8 @@ CREATE TABLE teams (
     s INTEGER NOT NULL
 );
 
+
+-- Create table for draft picks
 CREATE TABLE draft_picks (
     id SERIAL PRIMARY KEY,
     pick_number INTEGER NOT NULL,
@@ -31,6 +41,8 @@ CREATE TABLE draft_picks (
     original_team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
 );
 
+
+-- Create table for mock drafts
 CREATE TABLE mock_drafts (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) DEFAULT "Mock Draft",
@@ -38,6 +50,8 @@ CREATE TABLE mock_drafts (
     year INTEGER NOT NULL
 );
 
+
+-- Create table for mock draft picks
 CREATE TABLE mock_draft_picks (
     id SERIAL PRIMARY KEY,
     mock_draft_id INTEGER NOT NULL REFERENCES mock_drafts(id) ON DELETE CASCADE,
@@ -47,6 +61,8 @@ CREATE TABLE mock_draft_picks (
     original_team_id INTEGER NOT NULL REFERENCES teams(id) ON DELETE CASCADE
 );
 
+
+-- Create table for user-controlled teams
 CREATE TABLE user_controlled_teams (
     id SERIAL PRIMARY KEY,
     mock_draft_id INTEGER NOT NULL REFERENCES mock_drafts(id) ON DELETE CASCADE,

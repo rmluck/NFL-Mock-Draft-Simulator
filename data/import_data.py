@@ -1,11 +1,20 @@
+"""
+Imports data from CSV files into database.
+"""
+
+
+# Import necessary libraries
 import csv, os
 from backend.apps.models import Team, Player, DraftPick
 from backend.database import SessionLocal
 
+# Define folder containing the data files
 DATA_FOLDER = os.path.join(os.path.dirname(__file__), "2025")
 
+# Establish database session
 session = SessionLocal()
 
+# Read players from CSV file and add to database
 with open(os.path.join(DATA_FOLDER, "players.csv"), newline="") as file:
     reader = csv.DictReader(file)
     for row in reader:
@@ -18,6 +27,7 @@ with open(os.path.join(DATA_FOLDER, "players.csv"), newline="") as file:
         )
         session.add(player)
 
+# Read teams from CSV file and add to database
 with open(os.path.join(DATA_FOLDER, "teams.csv"), newline="") as file:
     reader = csv.DictReader(file)
     for row in reader:
@@ -39,6 +49,7 @@ with open(os.path.join(DATA_FOLDER, "teams.csv"), newline="") as file:
 
 session.commit()
 
+# Read draft picks from CSV file and add to database
 with open(os.path.join(DATA_FOLDER, "draft_picks.csv"), newline="") as file:
     reader = csv.DictReader(file)
     for row in reader:

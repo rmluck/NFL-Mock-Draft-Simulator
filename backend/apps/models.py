@@ -1,7 +1,15 @@
+"""
+Defines SQLAlchemy ORM model structures for players, teams, draft picks, mock drafts, mock draft picks, and user-controlled teams in the PostgreSQL database.
+"""
+
+
+# Import necessary packages and modules
 from sqlalchemy import Column, Integer, String, ForeignKey, ARRAY
 from sqlalchemy.orm import relationship
 from ..database import Base
 
+
+# Define ORM model for Player
 class Player(Base):
     __tablename__ = "players"
 
@@ -12,6 +20,8 @@ class Player(Base):
     rank = Column(Integer, nullable=False)
     year = Column(Integer, nullable=False)
 
+
+# Define ORM model for Team
 class Team(Base):
     __tablename__ = "teams"
 
@@ -31,6 +41,8 @@ class Team(Base):
 
     draft_picks = relationship("DraftPick", foreign_keys="[DraftPick.current_team_id]", back_populates="current_team")
 
+
+# Define ORM model for DraftPick
 class DraftPick(Base):
     __tablename__ = "draft_picks"
 
@@ -44,6 +56,8 @@ class DraftPick(Base):
 
     current_team = relationship("Team", foreign_keys=[current_team_id], back_populates="draft_picks")
 
+
+# Define ORM model for MockDraft
 class MockDraft(Base):
     __tablename__ = "mock_drafts"
 
@@ -54,6 +68,8 @@ class MockDraft(Base):
 
     mock_draft_picks = relationship("MockDraftPick", back_populates="mock_draft")
 
+
+# Define ORM model for MockDraftPick
 class MockDraftPick(Base):
     __tablename__ = "mock_draft_picks"
 
@@ -71,6 +87,8 @@ class MockDraftPick(Base):
     draft_pick = relationship("DraftPick")
     original_team = relationship("Team", foreign_keys=[original_team_id])
 
+
+# Define ORM model for UserControlledTeam
 class UserControlledTeam(Base):
     __tablename__ = "user_controlled_teams"
 

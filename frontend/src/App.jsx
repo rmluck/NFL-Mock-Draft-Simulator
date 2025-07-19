@@ -1,9 +1,16 @@
+/*
+  * Main App component. Sets up main application routes using React Router.
+*/
+
+
+// Import necessary libraries and components
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from "./pages/Home";
 import Draft from "./pages/Draft";
 import Results from "./pages/Results";
 import "./App.css";
 
+// Function to set up the main application routes
 function App() {
   return (
     <Router>
