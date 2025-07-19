@@ -14,11 +14,14 @@ Full-stack web application designed and developed to simulate NFL draft scenario
 
 <br>
 
-INSERT IMAGE OF HOME PAGE
+**Home Page**
+![Home Page](/static/img/home_page.png)
 
-INSERT IMAGE OF DRAFT INTERFACE
+**Draft Page**
+![Draft Page](/static/img/draft_page.png)
 
-INSERT IMAGE OF RESULTS PAGE
+**Results Page**
+![Results Page](/static/img/results_page.png)
 
 ---
 
@@ -94,6 +97,22 @@ npm install
 npm run dev
 ```
 3. Access frontend at __http://localhost:5173__ (or your local Vite port).
+
+---
+
+## 💡 Usage
+
+**Team Selection**
+![Team Selection](/static/img/team_selection.png)
+
+**Trade Pick**
+![Trade Pick](/static/img/trade_pick.png)
+
+**Results Grid View**
+![Results Grid View](/static/img/results_grid_view.png)
+
+**Results Team View**
+![Results Team View](/static/img/results_team_view.png)
 
 ---
 
