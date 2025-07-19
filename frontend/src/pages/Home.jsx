@@ -182,7 +182,7 @@ function Home() {
                         onClick={handleStartDraft}
                         disabled={loading}
                     >
-                        {loading ? "Creating..." : "Start Draft"}
+                        {loading ? "Creating..." : "Enter Draft"}
                     </button>
 
                     {error && <p className="error">{error}</p>}
