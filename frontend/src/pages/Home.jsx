@@ -28,6 +28,7 @@ function Home() {
 
     // Initialize state variables for draft creation status
     const [loading, setLoading] = useState(false);
+    const [dots, setDots] = useState("");
     const [error, setError] = useState("");
 
     // Initialize state for dark mode (commented out for now)
@@ -45,6 +46,18 @@ function Home() {
         };
         fetchTeams();
     }, []);
+
+    useEffect(() => {
+        if (loading) {
+            const interval = setInterval(() => {
+                setDots(prev => prev.length < 3 ? prev + "." : "");
+            }, 500);
+
+            return () => clearInterval(interval);
+        } else {
+            setDots("");
+        }
+    }, [loading]);
 
     // useEffect(() => {
     //     if (darkMode) {
@@ -182,7 +195,7 @@ function Home() {
                         onClick={handleStartDraft}
                         disabled={loading}
                     >
-                        {loading ? "Creating..." : "Enter Draft"}
+                        {loading ? "Creating..." : "Start Draft"}
                     </button>
 
                     {error && <p className="error">{error}</p>}
