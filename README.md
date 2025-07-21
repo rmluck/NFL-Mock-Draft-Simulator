@@ -1,5 +1,7 @@
 # NFL Mock Draft Simulator
 
+![Main Logo](/frontend/public/site/main_logo.png)
+
 *By Rohan Mistry - Last updated July 19, 2025*
 
 ---
@@ -15,12 +17,15 @@ Full-stack web application designed and developed to simulate NFL draft scenario
 <br>
 
 **Home Page**
+
 ![Home Page](/static/img/home_page.png)
 
 **Draft Page**
+
 ![Draft Page](/static/img/draft_page.png)
 
 **Results Page**
+
 ![Results Page](/static/img/results_page.png)
 
 ---
@@ -104,13 +109,17 @@ npm run dev
 
 **Step 1: Draft Settings and Team Selection**
 Choose your desired draft settings, including number of rounds and draft year (currently only 2025 is available). You can also give your draft a custom name. Then, select the teams you would like to control during the simulation. For the teams you choose, you will manually make each of their draft selections. For the teams you do not choose, their picks will be auto-selected by the CPU according to a weighted algorithm. After finishing your preferred configurations, you can enter the draft simulation.
+
 ![Draft Settings and Team Selection](/static/img/team_selection.png)
+
 
 **Step 2: Draft Simulation**
 The draft simulation will begin right away. The top of the interface contains a horizontally scrollable list of the draft's picks. The pick that is currently on the clock will always be set as the leftmost visible pick in the bar, though you can scroll left to see picks that have already been made or scroll right to see upcoming picks. Each pick that is associated with a team that you are controlling will have a blue 'User' badge.
 
 The left sidebar of the main interface contains a selection of draft tools. You can undo the previous pick which will nullify its player assignment and return the player to the big board. If you undo a pick, a confirmation screen will pop up to where you can either confirm it or cancel it. You can pause or resume the draft and pick up where you left off later on. You can completely restart the draft which will return all previously selected players back to the big board and scroll back to the first overall pick, effectively resetting the entire draft. You can also trade the current pick. To do so, press the trade button to allow the trade window to pop up which will list all of the remaining picks for your current team and provide you a dropdown menu to select another team to trade with. You can individually select any remaining pick for either team to swap and doing so will result in a verdict bar appearing which states whether a trade is fair, acceptable, or lopsided. These evaluations are made based on the Rich Hill trade value chart along with some additional calculations. You can either submit the trade which will swap the chosen picks between the two teams or cancel the trade and return to the main interface.
+
 ![Trade Pick](/static/img/trade_pick.png)
+
 There is also a volume toggle at the bottom of the sidebar which switches back and forth between muted and unmuted. If unmuted, sounds will play whenever you are back on the clock and after each draft selection you manually make. If muted, these sounds will not play.
 
 The middle section is the big board. This is a list of all players that are still available, ordered by rank. There is a position filter at the top in which you can filter the list to only show available players of a specified position. There is also a search bar so that you can query for a player name rather than having to scroll through the entire list to find it. Each player has their own select button which can be clicked when the current pick is assigned to a user-controlled team. The selected player will be assigned to the team with the current pick, the player will be removed from the big board, and the simulation will move to the next pick.
@@ -119,9 +128,13 @@ The right sidebar displays a team profile for the team that has the pick that is
 
 **Step 3: Draft Results**
 Once every draft pick in the simulation has been made, the simulation will automatically navigate to the results page. Initially, the full draft results will be displayed in a list view, vertically scrollable with round dividers. In the bottom right corner, you can toggle to a grid view which displays the entire first round in one screen. In grid view, you can flip through each round of the draft.
+
 ![Results Grid View](/static/img/results_grid_view.png)
+
 In addition to full draft results, you can scroll through the tabs at the top to any team-specific results. Every user-controlled team has its own list view with their entire draft haul.
+
 ![Results Team View](/static/img/results_team_view.png)
+
 
 In the header, there are several export options. You can export the results as PNG which will simply take a snapshot of your current window and download the image. You can also export the results as a CSV file or a JSON file which will gather the full draft results (or just team-specific results if you are currently on an individual team view) in the desired format and download the file. There is a share button which, when clicked, will simply copy a shareable link of your draft results to your clipboard. There is also a new draft button which directs you back to the home page so that you can enter a new draft.
 
@@ -159,4 +172,4 @@ This project was built independelty as a portfolio project. Inspired by draft si
 
 ## 🪪 License
 
-This project is licensed under the [MIT License](/LICENSE)
+This project is licensed under the [MIT License](/LICENSE).
