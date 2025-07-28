@@ -668,81 +668,88 @@ function Draft() {
                 
                 <div className="draft_picks_wrapper">
                     <div className="draft_picks">
-                        {picks.map((pick, index) => {
-                            if (index === currentPickIndex) {
-                                return (
-                                    <React.Fragment key={pick.id + "-with-header"}>
-                                        <p ref={onTheClockRef} className="on_the_clock_header">
-                                            On the
-                                            <br />
-                                            Clock
-                                        </p>
+                        {picks.length === 0 ? (
+                            <div className="picks_loading_message">
+                                Loading picks
+                                <span className="dot_animate"></span>
+                            </div>
+                        ) : (
+                            picks.map((pick, index) => {
+                                if (index === currentPickIndex) {
+                                    return (
+                                        <React.Fragment key={pick.id + "-with-header"}>
+                                            <p ref={onTheClockRef} className="on_the_clock_header">
+                                                On the
+                                                <br />
+                                                Clock
+                                            </p>
 
-                                        <div ref={el => pickRefs.current[pick.id] = el} className={`draft_pick on_the_clock`}>
-                                            <div className="pick_team_logo_wrapper">
-                                                <img
-                                                    src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`}
-                                                    alt={pick.team.name}
-                                                    className="pick_team_logo"
-                                                />
-                                            </div>
+                                            <div ref={el => pickRefs.current[pick.id] = el} className={`draft_pick on_the_clock`}>
+                                                <div className="pick_team_logo_wrapper">
+                                                    <img
+                                                        src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`}
+                                                        alt={pick.team.name}
+                                                        className="pick_team_logo"
+                                                    />
+                                                </div>
 
-                                            <div className="pick_text_wrapper">
-                                                <div className="pick_team_name">
-                                                    {pick.team.name}
+                                                <div className="pick_text_wrapper">
+                                                    <div className="pick_team_name">
+                                                        {pick.team.name}
+                                                    </div>
+                                                </div>
+
+                                                <div className="pick_label">
+                                                    {userControlledTeams.includes(pick.team.id) && !pick.player &&
+                                                        (<small className="user_controlled_team_label">User</small>)
+                                                    }
+
+                                                    <small>
+                                                        {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                                    </small>
                                                 </div>
                                             </div>
+                                        </React.Fragment>
+                                    );
+                                }
 
-                                            <div className="pick_label">
-                                                {userControlledTeams.includes(pick.team.id) && !pick.player &&
-                                                    (<small className="user_controlled_team_label">User</small>)
-                                                }
+                                return (
+                                    <div
+                                        key={pick.id}
+                                        ref={el => pickRefs.current[pick.id] = el}
+                                        className={`draft_pick ${pick.player ? "picked" : "future"}`}
+                                    >
+                                        <div className="pick_team_logo_wrapper">
+                                            <img
+                                                src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`}
+                                                alt={pick.team.name}
+                                                className="pick_team_logo"
+                                            />
+                                        </div>
 
-                                                <small>
-                                                    {pick.draft_pick.round}.{pick.draft_pick.pick_number}
-                                                </small>
+                                        <div className="pick_text_wrapper">
+                                            <div className={`pick_team_name ${pick.player ? 'picked' : ''}`}>
+                                                {pick.team.name}
                                             </div>
+
+                                            {pick.player && (
+                                                <div className="pick_selected_player">{pick.player.name}</div>
+                                            )}
                                         </div>
-                                    </React.Fragment>
+
+                                        <div className="pick_label">
+                                            {userControlledTeams.includes(pick.team.id) && !pick.player &&
+                                                (<small className="user_controlled_team_label">User</small>)
+                                            }
+
+                                            <small>
+                                                {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                            </small>
+                                        </div>
+                                    </div>
                                 );
-                            }
-
-                            return (
-                                <div
-                                    key={pick.id}
-                                    ref={el => pickRefs.current[pick.id] = el}
-                                    className={`draft_pick ${pick.player ? "picked" : "future"}`}
-                                >
-                                    <div className="pick_team_logo_wrapper">
-                                        <img
-                                            src={`/logos/nfl/${pick.team.name.toLowerCase()}.png`}
-                                            alt={pick.team.name}
-                                            className="pick_team_logo"
-                                        />
-                                    </div>
-
-                                    <div className="pick_text_wrapper">
-                                        <div className={`pick_team_name ${pick.player ? 'picked' : ''}`}>
-                                            {pick.team.name}
-                                        </div>
-
-                                        {pick.player && (
-                                            <div className="pick_selected_player">{pick.player.name}</div>
-                                        )}
-                                    </div>
-
-                                    <div className="pick_label">
-                                        {userControlledTeams.includes(pick.team.id) && !pick.player &&
-                                            (<small className="user_controlled_team_label">User</small>)
-                                        }
-
-                                        <small>
-                                            {pick.draft_pick.round}.{pick.draft_pick.pick_number}
-                                        </small>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                            })
+                        )}
                     </div>
                 </div>
             </header>
@@ -996,44 +1003,51 @@ function Draft() {
                     </div>
 
                     <div className="players">
-                        {filteredPlayers.map(player => (
-                            <div key={player.id} className="player">
-                                <div className="player_college_logo_wrapper">
-                                    <img
-                                        src={`/logos/college/${player.college.replaceAll(" ", "_")}.png`}
-                                        alt={player.college}
-                                        className="player_college_logo"
-                                    />
-                                </div>
-
-                                <div className="player_details">
-                                    <span className="player_name">
-                                        {player.name}
-                                    </span>
-                                    <span className="player_background">
-                                        {player.college}
-                                    </span>
-                                </div>
-
-                                <div className="player_position">
-                                    {player.position}
-                                </div>
-
-                                <div className="player_rank">
-                                    <small>{player.rank}</small>
-                                </div>
-
-                                <div className="select_player">
-                                    <button
-                                        className="select_player_btn"
-                                        onClick={() => handleSelectPlayer(player)}
-                                        disabled={isSelecting || !isUserTurn || timeLeft === 0}
-                                    >
-                                        Select
-                                    </button>
-                                </div>
+                        {filteredPlayers.length === 0 ? (
+                            <div className="players_loading_message">
+                                Loading players
+                                <span className="dot_animate"></span>
                             </div>
-                        ))}
+                        ) : (
+                            filteredPlayers.map(player => (
+                                <div key={player.id} className="player">
+                                    <div className="player_college_logo_wrapper">
+                                        <img
+                                            src={`/logos/college/${player.college.replaceAll(" ", "_")}.png`}
+                                            alt={player.college}
+                                            className="player_college_logo"
+                                        />
+                                    </div>
+
+                                    <div className="player_details">
+                                        <span className="player_name">
+                                            {player.name}
+                                        </span>
+                                        <span className="player_background">
+                                            {player.college}
+                                        </span>
+                                    </div>
+
+                                    <div className="player_position">
+                                        {player.position}
+                                    </div>
+
+                                    <div className="player_rank">
+                                        <small>{player.rank}</small>
+                                    </div>
+
+                                    <div className="select_player">
+                                        <button
+                                            className="select_player_btn"
+                                            onClick={() => handleSelectPlayer(player)}
+                                            disabled={isSelecting || !isUserTurn || timeLeft === 0}
+                                        >
+                                            Select
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </section>
 
@@ -1130,7 +1144,10 @@ function Draft() {
                             </div>
                         </div>
                     ) : (
-                        <p>No team on the clock</p>
+                        <div className="team_loading_message">
+                            Loading team
+                            <span className="dot_animate"></span>
+                        </div>
                     )}
                 </aside>
             </main>

@@ -209,25 +209,33 @@ function Home() {
                     </div>
 
                     <div className="team_selection_grid">
-                        {teams.map((team) => (
-                            <button
-                                key={team.id}
-                                onClick={() => handleToggleTeam(team.id)}
-                                className={`select_team_btn ${selectedTeams.includes(team.id) ? "selected" : ""}`}
-                            >
-                                <div className="select_team_logo_wrapper">
-                                    <img
-                                        src={`/logos/nfl/${team.name.toLowerCase()}.png`}
-                                        alt={`${team.name} logo`}
-                                        className="select_team_logo"
-                                    />
-                                </div>
+                        {teams.length === 0 ? (
+                            <div className="teams_loading_message">
+                                Loading teams
+                                <span className="dot_animate"></span>
+                            </div>
+                            ) : (
+                                teams.map((team) => (
+                                    <button
+                                        key={team.id}
+                                        onClick={() => handleToggleTeam(team.id)}
+                                        className={`select_team_btn ${selectedTeams.includes(team.id) ? "selected" : ""}`}
+                                    >
+                                        <div className="select_team_logo_wrapper">
+                                            <img
+                                                src={`/logos/nfl/${team.name.toLowerCase()}.png`}
+                                                alt={`${team.name} logo`}
+                                                className="select_team_logo"
+                                            />
+                                        </div>
 
-                                <span className="select_team_name">
-                                    {team.name}
-                                </span>
-                            </button>
-                        ))}
+                                        <span className="select_team_name">
+                                            {team.name}
+                                        </span>
+                                    </button>
+                                ))
+                            )
+                        }
                     </div>
                 </section>
             </main>

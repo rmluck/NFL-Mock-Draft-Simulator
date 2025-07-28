@@ -12,3 +12,6 @@ venv/
 
 # Environment variables
 backend/.env
+
+# Terminal commands
+terminal.txt

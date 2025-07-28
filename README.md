@@ -142,7 +142,6 @@ In the header, there are several export options. You can export the results as P
 
 ## 🚧 Future Improvements
 
-* Loading button
 * Multi-select position filtering for big board
 * Dark mode support and advanced theme customization
 * Advanced pre-draft setup enhancements (e.g., manually edit team needs, custom draft order, preset draft modes (realistic, chaos, team-focused, random, etc.))
