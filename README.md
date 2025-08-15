@@ -33,22 +33,22 @@ Full-stack web application designed and developed to simulate NFL draft scenario
 ## 📁 Contents
 
 ```bash
+|── alembic/
+│   └── versions/               # Database migrations
+│   └── env.py                  # Alembic environment configuration
 |── backend/
-│   └── alembic/
-│       └── versions/       # Database migrations
-│       └── env.py          # Alembic environment configuration
 │   └── apps/
 │       └── crud.py             # CRUD operations
 │       └── models.py           # SQLAlchemy ORM model structures
 │       └── schemas.py          # Pydantic schemas
 │   └── scripts/
 │       └── draft_service.py    # Basic simulation script
-│   └── database.py         # PostgreSQL database connection
-│   └── main.py             # FastAPI endpoints and CORS middleware
+│   └── database.py             # PostgreSQL database connection
+│   └── main.py                 # FastAPI endpoints and CORS middleware
 |── data/
-│   └── 2025/               # Draft data for 2025
-│   └── import_data.py      # Database import from CSV data
-│   └── schema.sql          # PostgreSQL database schema
+│   └── 2025/                   # Draft data for 2025
+│   └── import_data.py          # Database import from CSV data
+│   └── schema.sql              # PostgreSQL database schema
 |── frontend/
 │   └── src/
 │       └── pages/
@@ -57,9 +57,9 @@ Full-stack web application designed and developed to simulate NFL draft scenario
 │           └── Results.jsx     # Results page component
 │       └── App.css             # CSS styling
 │       └── App.jsx             # Main app component
-|── LICENSE             # MIT License
-|── README.md           # Project documentation
-└── requirements.txt    # Python dependencies
+|── LICENSE                     # MIT License
+|── README.md                   # Project documentation
+└── requirements.txt            # Python dependencies
 ```
 
 ___
@@ -163,7 +163,7 @@ In the header, there are several export options. You can export the results as P
 * **Backend**: FastAPI (Python), SQLAlchemy, Pydantic
 * **Database** PostgreSQL
 * **Migrations**: Alembic
-* **Deployment**: Netlify (frontend), Render (backend, database)
+* **Deployment**: Netlify (frontend), Render (backend), Supabase (database)
 
 ## 🙏 Contributions / Acknowledgements
 
