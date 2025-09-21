@@ -8,7 +8,7 @@
 
 ## 📖 Overview
 
-Full-stack web application designed and developed to simulate NFL draft scenarios, allowing users to control specific teams, make real-time draft selections, and view draft results dynamically. Built with a React frontend and FastAPI backend, using PostgreSQL for data management. Deployed with Netlify and Render.
+Full-stack web application designed and developed to simulate NFL draft scenarios, allowing users to control specific teams, make real-time draft selections, and view draft results dynamically. Built with a React frontend and FastAPI backend, using PostgreSQL for data management. Deployed with Netlify, Render, and Supabase.
 
 **Target Users** are both casual and diehard NFL fans and analysts who want a hands-on mock draft experience to simulate NFL draft scenarios.
 

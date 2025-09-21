@@ -9,4 +9,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Ping backend
-              run: curl -s https://nfl-mock-draft-simulator.onrender.com/ > /dev/null
+              run: curl -s https://nfl-mock-draft-simulator.netlify.com/ > /dev/null
