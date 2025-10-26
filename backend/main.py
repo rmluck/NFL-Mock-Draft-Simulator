@@ -4,11 +4,12 @@ Main entry point for FastAPI application that serves mock draft simulator. Defin
 
 
 # Import necessary libraries
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from .apps import models, crud, schemas
 from .database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
+import time
 
 # Initialize FastAPI application
 app = FastAPI()
@@ -34,6 +35,11 @@ def get_db():
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the NFL Mock Draft Simulator."}
+
+# API endpoint to check health
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": time.time()}
 
 # API endpoint to create player
 @app.post("/players/", response_model=schemas.PlayerBase)
@@ -84,7 +90,9 @@ def get_team(team_id: int, db: Session = Depends(get_db)):
 
 # API endpoint to retrieve all teams with pagination
 @app.get("/teams/", response_model=list[schemas.TeamBase])
-def get_teams(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_teams(response: Response, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    response.headers["Cache-Control"] = "public, max-age=3600"
+    response.headers["ETag"] = "teams-v1"
     return crud.get_teams(db=db, skip=skip, limit=limit)
 
 # API endpoint to update team information

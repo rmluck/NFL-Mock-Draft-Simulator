@@ -319,17 +319,41 @@
 
 .teams_loading_message {
   display: flex;
+  grid-column: 1 / -1;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: 8rem 13rem;
+  /* gap: 1rem; */
+  /* width: 100%;
+  height: 100%; */
+  padding: 4rem 2rem;
 
   color: var(--black);
 
   font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
+}
+
+.loading_progress {
+  width: 200px;
+  height: 4px;
+  overflow: hidden;
+
+  background-color: var(--light-orange);
+  border-radius: 2px;
+}
+
+.loading_progress_bar {
+  height: 100%;
+  background-color: var(--blue);
+  border-radius: 2px;
+  animation: loading-progress 3s ease-in-out infinite;
+}
+
+@keyframes loading-progress {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
 }
 
 .select_team_btn {

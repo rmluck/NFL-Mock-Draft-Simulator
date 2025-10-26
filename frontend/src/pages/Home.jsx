@@ -23,11 +23,14 @@ function Home() {
     const [year, setYear] = useState(2025);
 
     // Initialize state variables for team selection
-    const[teams, setTeams] = useState([]);
+    const [teamsLoading, setTeamsLoading] = useState(true);
+    const [teamsError, setTeamsError] = useState("");
+    const [teams, setTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
 
     // Initialize state variables for draft creation status
     const [loading, setLoading] = useState(false);
+    const [loadingStartTime, setLoadingStartTime] = useState(null);
     const [dots, setDots] = useState("");
     const [error, setError] = useState("");
 
@@ -37,15 +40,48 @@ function Home() {
     // Fetch teams from the API when the component mounts
     useEffect(() => {
         const fetchTeams = async () => {
+            setTeamsLoading(true);
+            setTeamsError("");
+            setLoadingStartTime(Date.now());
+
             try {
-                const response = await axios.get(`${apiURL}/teams`);
+                // Create an abort controller for timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                }, 45000); // 45 second timeout
+
+                const response = await axios.get(`${apiURL}/teams`, {
+                    signal: controller.signal,
+                    timeout: 45000,
+                    headers: {
+                        "Cache-Control": "no-cache",
+                        "Pragma": "no-cache",
+                    }
+                });
+                
+                clearTimeout(timeoutId);
                 setTeams(response.data);
+
+                const loadTime = Date.now() - loadingStartTime;
+                console.log(`Teams loaded in ${loadTime}ms`);
             } catch (err) {
-                console.error("Failed to fetch teams");
+                console.error("Failed to fetch teams", err);
+
+                if (err.name === "AbortError" || err.code === "ECONNABORTED") {
+                    setTeamsError("Server is starting up (this can take up to 60 seconds on first visit). Please wait...");
+                } else if (err.response?.status >= 500) {
+                    setTeamsError("Server error. Please refresh the page.");
+                } else {
+                    setTeamsError("Failed to fetch teams. Please check your connection and try again.");
+                }
+            } finally {
+                setTeamsLoading(false);
             }
         };
+
         fetchTeams();
-    }, []);
+    }, [apiURL]);
 
     useEffect(() => {
         if (loading) {
@@ -203,17 +239,45 @@ function Home() {
                             Select Teams to Control
                         </h2>
 
-                        <button onClick={handleSelectAll} className="select_all_btn">
+                        <button
+                            onClick={handleSelectAll}
+                            disabled={teamsLoading}
+                            className="select_all_btn"
+                        >
                             {selectedTeams.length === teams.length ? "Deselect All" : "Select All"}
                         </button>
                     </div>
 
                     <div className="team_selection_grid">
-                        {teams.length === 0 ? (
+                        {teamsLoading ? (
                             <div className="teams_loading_message">
-                                Loading teams
+                                {loadingStartTime && Date.now() - loadingStartTime > 10000 ? (
+                                    "Server is waking up, please wait (up to 60 seconds on first visit)"
+                                ) : (
+                                    "Loading teams"
+                                )}
                                 <span className="dot_animate"></span>
                             </div>
+                            ) : teamsError ? (
+                                <div
+                                    className="teams_loading_message"
+                                    style={{ color: "red", flexDirection: "column", gap: "10px" }}
+                                >
+                                    {teamsError}
+                                    <button
+                                        onClick={() => window.location.reload()}
+                                        style={{
+                                            padding: "10px 20px",
+                                            backgroundColor: "var(--light-red)",
+                                            border: "2px solid var(--black)",
+                                            borderRadius: "6px",
+                                            cursor: "pointer",
+                                            fontWeight: "bold"
+                                        }}
+                                    >
+                                        Retry
+                                    </button>
+                                </div>
                             ) : (
                                 teams.map((team) => (
                                     <button
@@ -226,6 +290,7 @@ function Home() {
                                                 src={`/logos/nfl/${team.name.toLowerCase()}.png`}
                                                 alt={`${team.name} logo`}
                                                 className="select_team_logo"
+                                                loading="lazy"
                                             />
                                         </div>
 

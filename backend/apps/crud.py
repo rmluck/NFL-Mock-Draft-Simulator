@@ -5,6 +5,7 @@ Defines CRUD operations for players, teams, draft picks, mock drafts, mock draft
 
 # Import necessary packages
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from . import models, schemas
 
 
@@ -72,7 +73,7 @@ def get_team(db: Session, team_id: int):
 
 # Retrieve all teams from database, with pagination support
 def get_teams(db: Session, skip: int = 0, limit: int = 32):
-    return db.query(models.Team).offset(skip).limit(limit).all()
+    return db.query(models.Team).order_by(models.Team.id).offset(skip).limit(limit).all()
 
 
 # Update team information in the database
