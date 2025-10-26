@@ -161,13 +161,13 @@ In the header, there are several export options. You can export the results as P
 * Python, JavaScript, HTML, CSS, SQL
 * **Frontend**: React (Vite), React-Router
 * **Backend**: FastAPI (Python), SQLAlchemy, Pydantic
-* **Database** PostgreSQL
+* **Database**: PostgreSQL
 * **Migrations**: Alembic
 * **Deployment**: Netlify (frontend), Render (backend), Supabase (database)
 
 ## 🙏 Contributions / Acknowledgements
 
-This project was built independelty as a portfolio project. Inspired by draft simulators like [PFF](https://www.pff.com/draft/nfl-mock-draft-simulator), [NFL Mock Draft Database](https://www.nflmockdraftdatabase.com/mock-draft-simulator), and [Mock Draft Central](https://www.mockdraftcentral.io/).
+This project was built independently as a portfolio project. Inspired by draft simulators like [PFF](https://www.pff.com/draft/nfl-mock-draft-simulator), [NFL Mock Draft Database](https://www.nflmockdraftdatabase.com/mock-draft-simulator), and [Mock Draft Central](https://www.mockdraftcentral.io/).
 
 ## 🪪 License
 
