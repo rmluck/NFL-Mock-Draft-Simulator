@@ -8,7 +8,9 @@
 
 ## 📖 Overview
 
-Full-stack web application designed and developed to simulate NFL draft scenarios, allowing users to control specific teams, make real-time draft selections, and view draft results dynamically. Built with a React frontend and FastAPI backend, using PostgreSQL for data management. Deployed with Netlify, Render, and Supabase.
+NFL Mock Draft Simulator is a comprehensive full-stack web application that delivers an immersive sports simulation experience, combining modern web technologies with sophisticated algorithmic decision-making. Built with a React frontend and FastAPI backend, the platform enables users to control multiple NFL teams simultaneously while an intelligent CPU system manages non-controlled teams using weighted algorithms based on positional needs and player rankings. The application features real-time draft progression, dynamic team roster management, and interactive trade evaluation systems powered by industry-standard draft value charts.
+
+The platform demonstrates advanced full-stack development capabilities through its PostgreSQL database architecture, RESTful API design, and responsive user interface that handles complex state management across multiple concurrent draft simulations. Key technical achievements include implementing real-time data synchronization, automated background processing for CPU picks, comprehensive CRUD operations, and seamless deployment across cloud platforms (Netlify, Render, Supabase). The application processes over 250+ player profiles and manages intricate relational data structures while maintaining optimal performance through connection pooling and caching strategies.
 
 **Target Users** are both casual and diehard NFL fans and analysts who want a hands-on mock draft experience to simulate NFL draft scenarios.
 
