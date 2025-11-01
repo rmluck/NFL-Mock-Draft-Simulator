@@ -42,7 +42,7 @@ function Draft() {
     const currentTeam = currentPick ? currentPick.team : null;
     const isUserTurn = currentPick && userControlledTeams.includes(currentPick.team.id);
     const [timeLeft, setTimeLeft] = useState(60);
-    const [autoPickDelay, setAutoPickDelay] = useState(1000);
+    const [autoPickDelay, setAutoPickDelay] = useState(location.state?.autoPickDelay || 1000);
 
     // Initialize state variables for draft tools
     const [pickToUndo, setPickToUndo] = useState(null);
@@ -944,7 +944,8 @@ function Draft() {
                                 min={200}
                                 max={5000}
                                 step={100}
-                                value={5200 - autoPickDelay} onChange={(e) => setAutoPickDelay(5200 - parseInt(e.target.value))}
+                                value={5200 - autoPickDelay}
+                                onChange={(e) => setAutoPickDelay(5200 - parseInt(e.target.value))}
                             />
                         </div>
 
