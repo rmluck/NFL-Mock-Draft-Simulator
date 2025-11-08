@@ -145,6 +145,7 @@ In the header, there are several export options. You can export the results as P
 ## 🚧 Future Improvements
 
 * Multi-select position filtering for big board
+* Add sim-to-end button to draft tools
 * Dark mode support and advanced theme customization
 * Advanced pre-draft setup enhancements (e.g., manually edit team needs, custom draft order, preset draft modes (realistic, chaos, team-focused, random, etc.))
 * Post-draft analysis features (e.g., grades and team ranks)
@@ -154,18 +155,47 @@ In the header, there are several export options. You can export the results as P
 * Advanced player stats and profiles
 * Multiplayer mode
 * User accounts with saved history tracking
-* Mobile app
 
 ---
 
 ## 🧰 Tech Stack
 
-* Python, JavaScript, HTML, CSS, SQL
-* **Frontend**: React (Vite), React-Router
-* **Backend**: FastAPI (Python), SQLAlchemy, Pydantic
-* **Database**: PostgreSQL
-* **Migrations**: Alembic
-* **Deployment**: Netlify (frontend), Render (backend), Supabase (database)
+### Frontend Technologies
+* **JavaScript**: Core language for frontend development
+* **HTML5**: Markup language for structuring web content
+* **CSS3**: Styling and layout
+* **React 18**: User interface library for building interactive UIs
+* **Vite**: Fast development build tool and dev server
+* **React Router**: Declarative routing for React apps
+
+### Backend & API
+* **Python 3.11**: Backend programming language
+* **FastAPI**: Modern, fast async web framework for building APIs
+* **SQL**: Structured query language for data operations
+* **SQLAlchemy**: ORM for database interactions
+* **Pydantic**: Data validation and settings management
+* **Alembic**: Database migrations and schema management
+
+### Database & Data Management
+* **PostgreSQL**: Relational database manaagement system
+* **Supabase**: PostgreSQL database hosting, authentication, and management
+* **CSV**: Draft data import/export
+
+### Real-Time & State Management
+* **React State**: Local and global state management
+* **Custom hooks**: Encapsulated logic for draft simulation and UI state
+
+### Development Tools
+* **ESLint**: Code linting and formatting
+* **Prettier**: Code formatting
+
+### Build & Development
+* **Node.js**: JavaScript runtime environment
+* **npm**: Package management
+
+### Deployment
+* **Netlify**: Frontend development and hosting
+* **Render**: Backend deployment and hosting
 
 ## 🙏 Contributions / Acknowledgements
 

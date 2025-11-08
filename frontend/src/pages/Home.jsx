@@ -23,6 +23,7 @@ function Home() {
     const [year, setYear] = useState(2025);
     const [autoPickDelay, setAutoPickDelay] = useState(1000);
     const [soundsMuted, setSoundsMuted] = useState(false);
+    const [yearDropdownInteracted, setYearDropdownInteracted] = useState(false);
 
     // Initialize state variables for team selection
     const [teamsLoading, setTeamsLoading] = useState(true);
@@ -212,7 +213,12 @@ function Home() {
                             <br />
                             <select
                                 value={year}
-                                onChange={(e) => setYear(parseInt(e.target.value))}
+                                onChange={(e) => {
+                                    setYear(parseInt(e.target.value));
+                                    setYearDropdownInteracted(true);
+                                }}
+                                onBlur={() => setYearDropdownInteracted(true)}
+                                className={yearDropdownInteracted ? "interacted" : ""}
                             >
                                 <option value={2025}>
                                     2025
