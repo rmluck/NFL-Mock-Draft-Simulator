@@ -21,12 +21,16 @@ function Home() {
     const [name, setName] = useState("");
     const [numRounds, setNumRounds] = useState(1);
     const [year, setYear] = useState(2025);
+    const [autoPickDelay, setAutoPickDelay] = useState(1000);
+    const [soundsMuted, setSoundsMuted] = useState(false);
+    const [yearDropdownInteracted, setYearDropdownInteracted] = useState(false);
 
     // Initialize state variables for team selection
     const [teamsLoading, setTeamsLoading] = useState(true);
     const [teamsError, setTeamsError] = useState("");
     const [teams, setTeams] = useState([]);
     const [selectedTeams, setSelectedTeams] = useState([]);
+    const [showSelectTeamModal, setShowSelectTeamModal] = useState(false);
 
     // Initialize state variables for draft creation status
     const [loading, setLoading] = useState(false);
@@ -119,6 +123,11 @@ function Home() {
 
     // Handle draft creation
     const handleStartDraft = async () => {
+        if (selectedTeams.length === 0) {
+            setShowSelectTeamModal(true);
+            return;
+        }
+
         setLoading(true);
         setError("");
 
@@ -147,7 +156,7 @@ function Home() {
             })));
 
             // Navigate to the created draft page with the created draft data
-            navigate(`/draft/${createdDraft.id}`, { state: { createdDraft } });
+            navigate(`/draft/${createdDraft.id}`, { state: { createdDraft, autoPickDelay } });
         } catch (err) {
             setError("Failed to create mock draft.");
         } finally {
@@ -179,7 +188,14 @@ function Home() {
                         <br />
                         3. Simulate each draft pick
                     </p>
-                    <br />
+
+                    {/* <div className="nfl_draft_logo_container">
+                        <img 
+                            src="/logos/nfl_draft.svg"
+                            alt="NFL Draft logo"
+                            className="nfl_draft_logo"
+                        />
+                    </div> */}
 
                     <label className="draft_name">
                         Draft Name
@@ -191,20 +207,69 @@ function Home() {
                         />
                     </label>
 
-                    <label className="draft_year">
-                        Year
-                        <br />
-                        <select value={year} onChange={(e) => setYear(parseInt(e.target.value))}>
-                            <option value={2025}>
-                                2025
-                            </option>
-                        </select>
-                    </label>
+                    <div className="draft_year_and_sounds">
+                        <label className="draft_year">
+                            Year
+                            <br />
+                            <select
+                                value={year}
+                                onChange={(e) => {
+                                    setYear(parseInt(e.target.value));
+                                    setYearDropdownInteracted(true);
+                                }}
+                                onBlur={() => setYearDropdownInteracted(true)}
+                                className={yearDropdownInteracted ? "interacted" : ""}
+                            >
+                                <option value={2025}>
+                                    2025
+                                </option>
+                            </select>
+                        </label>
+
+                        <label className="mute_sounds">
+                            Mute Sounds
+                            <br />
+                            <button
+                                type="button"
+                                className={`mute_sounds_wrapper ${soundsMuted ? "muted" : "unmuted"}`}
+                                onClick={() => setSoundsMuted(prev => !prev)}
+                                tabIndex={0}
+                                aria-label={soundsMuted ? "Unmute sounds" : "Mute sounds"}
+                            >
+                                <img 
+                                    src={soundsMuted ? "/site/unmute.svg" : "/site/mute.svg"}
+                                    alt={soundsMuted ? "Unmute": "Mute"}
+                                    className="mute_sounds_btn"
+                                />
+                            </button>
+                        </label>
+                    </div>
 
                     {/* <button className="dark_mode_btn" onClick={() => setDarkMode(prev => !prev)}>
                         {darkMode ? "Light Mode" : "Dark Mode"}
                     </button> */}
-                    <br />
+                    {/* <br /> */}
+
+                    <div className="pick_speed">
+                        Pick Speed
+                        <div className="pick_speed_wrapper">
+                            <div className="pick_speed_slider_container">
+                                <input
+                                    className="pick_speed_slider"
+                                    type="range"
+                                    min={200}
+                                    max={5000}
+                                    step={100}
+                                    value={5200 - autoPickDelay}
+                                    onChange={(e) => setAutoPickDelay(5200 - parseInt(e.target.value))}
+                                ></input>
+                                <div className="pick_speed_labels">
+                                    <span className="pick_speed_label fast">Fast</span>
+                                    <span className="pick_speed_label slow">Slow</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="num_rounds">
                         Number of Rounds
@@ -220,7 +285,6 @@ function Home() {
                             ))}
                         </div>
                     </div>
-                    <br />
 
                     <button
                         className="start_draft_btn"
@@ -229,6 +293,22 @@ function Home() {
                     >
                         {loading ? `Creating${dots}` : "Start Draft"}
                     </button>
+
+                    {showSelectTeamModal && (
+                        <div className="select_team_modal_overlay">
+                            <div className="select_team_modal">
+                                <h3>You must select at least one team.</h3>
+                                <button
+                                    className="close_modal_btn"
+                                    onClick={() => setShowSelectTeamModal(false)}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    
 
                     {error && <p className="error">{error}</p>}
                 </aside>

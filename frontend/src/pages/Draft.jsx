@@ -26,6 +26,9 @@ function Draft() {
     // Initialize navigate function from react-router
     const navigate = useNavigate();
 
+    // Initialize state variable for responsive design
+    const [isStacked, setIsStacked] = useState(window.innerWidth <= 1300);
+
     // Initialize state variables for players
     const [players, setPlayers] = useState([]);
 
@@ -42,9 +45,10 @@ function Draft() {
     const currentTeam = currentPick ? currentPick.team : null;
     const isUserTurn = currentPick && userControlledTeams.includes(currentPick.team.id);
     const [timeLeft, setTimeLeft] = useState(60);
-    const [autoPickDelay, setAutoPickDelay] = useState(1000);
+    const [autoPickDelay, setAutoPickDelay] = useState(location.state?.autoPickDelay || 1000);
 
     // Initialize state variables for draft tools
+    const [toolsCollapsed, setToolsCollapsed] = useState(window.innerWidth <= 1300);
     const [pickToUndo, setPickToUndo] = useState(null);
     const [showTradeModal, setShowTradeModal] = useState(false);
     const [tradePartner, setTradePartner] = useState(null);
@@ -156,6 +160,22 @@ function Draft() {
         };
         fetchRest();
     }, [draft]);
+
+    // Handle window resize for responsive design
+    useEffect(() => {
+  let lastStacked = window.innerWidth <= 1300;
+  setToolsCollapsed(lastStacked);
+  const handleResize = () => {
+    const stacked = window.innerWidth <= 1300;
+    if (stacked !== lastStacked) {
+      setToolsCollapsed(stacked);
+      lastStacked = stacked;
+    }
+    setIsStacked(stacked);
+  };
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
 
     // Scroll to the next pick on the clock when picks change
     useEffect(() => {
@@ -469,8 +489,22 @@ function Draft() {
     };
 
     // Display all possible trade partners
+    // const getTradePartnerOptions = () => {
+    //     return [...new Set(picks.map(pick => pick.team))].filter(team => team.id !== currentTeam.id).map(team => ({ value: team.id, label: team.name, team }));
+    // };
+
     const getTradePartnerOptions = () => {
-        return [...new Set(picks.map(pick => pick.team))].filter(team => team.id !== currentTeam.id).map(team => ({ value: team.id, label: team.name, team }));
+        const teamsById = {};
+        picks.forEach(pick => {
+            if (pick.team && pick.team.id != currentTeam.id) {
+                teamsById[pick.team.id] = pick.team;
+            }
+        });
+        return Object.values(teamsById).map(team => ({
+            value: team.id,
+            label: team.name,
+            team,
+        }));
     };
 
     // Handle trade partner selection
@@ -569,6 +603,8 @@ function Draft() {
                 currentTeam: [],
                 tradePartner: []
             });
+            setTimeLeft(60);
+            setPaused(false);
         }
     };
 
@@ -660,11 +696,19 @@ function Draft() {
             <header className="draft_header">
                 <Link to="/" className="logo_link">
                     <img
-                        src="/site/alternate_logo.png"
+                        src="/site/icon_logo.png"
                         alt="NFL Mock Draft Simulator logo"
                         className="draft_logo" 
                     />
                 </Link>
+
+                {currentPick && (
+                    <div className={`pick_timer ${timeLeft <= 10 ? "urgent" : ""} ${isUserTurn ? "" : "cpu_turn"}`}>
+                        <span>
+                            {isUserTurn ? `${timeLeft}s` : "CPU"}
+                        </span>
+                    </div>
+                )}
                 
                 <div className="draft_picks_wrapper">
                     <div className="draft_picks">
@@ -742,7 +786,7 @@ function Draft() {
                                                 (<small className="user_controlled_team_label">User</small>)
                                             }
 
-                                            <small>
+                                            <small className="pick_badge">
                                                 {pick.draft_pick.round}.{pick.draft_pick.pick_number}
                                             </small>
                                         </div>
@@ -755,222 +799,257 @@ function Draft() {
             </header>
 
             <main className="draft_main">
-                <aside className="draft_tools">
-                    <h2>Draft Tools</h2>
-                    <button className="draft_tool" onClick={initiateUndoPick}>
-                        Undo Pick
-                    </button>
-                    <button className="draft_tool" onClick={() => setShowTradeModal(true)}>
-                        Trade Pick
-                    </button>
-                    <button className="draft_tool" onClick={() => setPaused(prev => !prev)}>
-                        {paused ? "Resume" : "Pause"} Draft
-                    </button>
-                    <button className="draft_tool" onClick={() => setShowConfirmRestartModal(true)}>
-                        Restart Draft
-                    </button>
-
-                    {showConfirmUndoModal && (
-                        <div className="confirm_undo_modal">
-                            <div className="confirm_undo_modal_content">
-                                <p className="confirm_undo_modal_message">
-                                    Undo pick {pickToUndo?.draft_pick.round}.{pickToUndo?.draft_pick.pick_number}?
-                                </p>
-                                <p className="confirm_undo_modal_pick">
-                                    {pickToUndo?.player.name} selected by {pickToUndo?.team.name}
-                                </p>
-                                <div className="confirm_undo_modal_buttons">
-                                    <button className="confirm_undo_modal_btn confirm" onClick={confirmUndoPick}>Yes</button>
-                                    <button className="confirm_undo_modal_btn cancel" onClick={cancelUndoPick}>No</button>
-                                </div>
-                            </div>
+                <aside className={`draft_tools ${toolsCollapsed ? "collapsed" : ""}`}>
+                    <div
+                        className="draft_tools_header"
+                        onClick={() => {
+                            if (isStacked) setToolsCollapsed(prev => !prev);
+                        }}
+                        style={{
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <div></div>
+                        <h2
+                            style={{
+                                margin: 0,
+                            }}
+                        >
+                            Draft Tools
+                        </h2>
+                        <div>
+                            <span className={`chevron ${toolsCollapsed ? "collapsed" : ""}`}>
+                                {toolsCollapsed ? "▼" : "▲"}
+                            </span>
                         </div>
-                    )}
+                    </div>
 
-                    {showTradeModal && (
-                        <div className="trade_modal">
-                            <div className="trade_modal_content">
-                                <div className="trade_modal_header">
-                                    <h2>Trade Picks</h2>
-                                    <Select
-                                        className="trade_team_dropdown"
-                                        options={getTradePartnerOptions()}
-                                        onChange={handleSelectTradePartner}
-                                        placeholder="Select Trade Partner" 
-                                    />
+                    <div>
+                        {!toolsCollapsed && (
+                            <>
+                                <div className="draft_tools_buttons">
+                                    <button className="draft_tool" onClick={initiateUndoPick}>
+                                        Undo Pick
+                                    </button>
+                                    <button className="draft_tool" onClick={() => {
+                                        setShowTradeModal(true);
+                                        setPaused(true);
+                                    }}>
+                                        Trade Pick
+                                    </button>
+                                    <button className="draft_tool" onClick={() => setPaused(prev => !prev)}>
+                                        {paused ? "Resume" : "Pause"} Draft
+                                    </button>
+                                    <button className="draft_tool" onClick={() => setShowConfirmRestartModal(true)}>
+                                        Restart Draft
+                                    </button>
                                 </div>
 
-                                <div className="trade_columns">
-                                    <div className="trade_team_column">
-                                        <div className="trade_team">
-                                            <div className="trade_team_logo_wrapper">
-                                                <img
-                                                    src={`/logos/nfl/${currentTeam.name.toLowerCase()}.png`}
-                                                    alt={currentTeam.name}
-                                                    className="trade_team_logo"
-                                                />
+                                {showConfirmUndoModal && (
+                                    <div className="confirm_undo_modal">
+                                        <div className="confirm_undo_modal_content">
+                                            <p className="confirm_undo_modal_message">
+                                                Undo pick {pickToUndo?.draft_pick.round}.{pickToUndo?.draft_pick.pick_number}?
+                                            </p>
+                                            <p className="confirm_undo_modal_pick">
+                                                {pickToUndo?.player.name} selected by {pickToUndo?.team.name}
+                                            </p>
+                                            <div className="confirm_undo_modal_buttons">
+                                                <button className="confirm_undo_modal_btn confirm" onClick={confirmUndoPick}>Yes</button>
+                                                <button className="confirm_undo_modal_btn cancel" onClick={cancelUndoPick}>No</button>
                                             </div>
-
-                                            <div className="trade_team_name">
-                                                {currentTeam.name}
-                                            </div>
-                                        </div>
-
-                                        <div className="trade_picks">
-                                            {teamPicks.filter(pick => !pick.player).map(pick => (
-                                                <button
-                                                    key={pick.id}
-                                                    className={`trade_pick_btn ${tradedPicks.currentTeam.includes(pick.id) ? "selected" : ""}`}
-                                                    onClick={() => togglePickSelection("currentTeam", pick.id)}
-                                                >
-                                                    {pick.draft_pick.round}.{pick.draft_pick.pick_number}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="trade_team_column">
-                                        {tradePartner && (
-                                            <>
-                                                <div className="trade_team">
-                                                    <div className="trade_team_logo_wrapper">
-                                                        <img
-                                                            src={`/logos/nfl/${tradePartner.name.toLowerCase()}.png`}
-                                                            alt={tradePartner.name}
-                                                            className="trade_team_logo"
-                                                        />
-                                                    </div>
-
-                                                    <div className="trade_team_name">
-                                                        {tradePartner.name}
-                                                    </div>
-                                                </div>
-
-                                                <div className="trade_picks">
-                                                    {picks.filter(pick => pick.team.id === tradePartner.id && !pick.player).map(pick => (
-                                                        <button
-                                                            key={pick.id}
-                                                            className={`trade_pick_btn ${tradedPicks.tradePartner.includes(pick.id) ? "selected" : ""}`}
-                                                            onClick={() => togglePickSelection("tradePartner", pick.id)}
-                                                        >
-                                                            {pick.draft_pick.round}.{pick.draft_pick.pick_number}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {tradeEvaluation && (
-                                    <div className="trade_evaluation">
-                                        <div
-                                            className={`trade_evaluation_bar ${tradeEvaluation.verdict.toLowerCase()}`}
-                                            style={{
-                                                transform: tradeEvaluation.verdict === "Fair" ? "translateX(0)" : tradeEvaluation.team1Total > tradeEvaluation.team2Total ? `translateX(${tradeEvaluation.percentDifference}%)` : `translateX(${-tradeEvaluation.percentDifference}%)`
-                                            }}
-                                            title={`Trade Verdict: ${tradeEvaluation.verdict}`}
-                                        >
-                                            {tradeEvaluation.verdict}
                                         </div>
                                     </div>
                                 )}
 
-                                <div className="trade_modal_buttons">
-                                    <button className="trade_modal_btn submit" onClick={submitTrade}>
-                                        Submit Trade
-                                    </button>
-                                    <button className="trade_modal_btn cancel" onClick={() => setShowTradeModal(false)}>
-                                        Cancel Trade
+                                {showTradeModal && (
+                                    <div className="trade_modal">
+                                        <div className="trade_modal_content">
+                                            <div className="trade_modal_header">
+                                                <h2>Trade Picks</h2>
+                                                <Select
+                                                    className="trade_team_dropdown"
+                                                    options={getTradePartnerOptions()}
+                                                    onChange={handleSelectTradePartner}
+                                                    placeholder="Select Trade Partner" 
+                                                />
+                                            </div>
+
+                                            <div className="trade_columns">
+                                                <div className="trade_team_column">
+                                                    <div className="trade_team">
+                                                        <div className="trade_team_logo_wrapper">
+                                                            <img
+                                                                src={`/logos/nfl/${currentTeam.name.toLowerCase()}.png`}
+                                                                alt={currentTeam.name}
+                                                                className="trade_team_logo"
+                                                            />
+                                                        </div>
+
+                                                        <div className="trade_team_name">
+                                                            {currentTeam.name}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="trade_picks">
+                                                        {teamPicks.filter(pick => !pick.player).map(pick => (
+                                                            <button
+                                                                key={pick.id}
+                                                                className={`trade_pick_btn ${tradedPicks.currentTeam.includes(pick.id) ? "selected" : ""}`}
+                                                                onClick={() => togglePickSelection("currentTeam", pick.id)}
+                                                            >
+                                                                {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                <div className="trade_team_column">
+                                                    {tradePartner && (
+                                                        <>
+                                                            <div className="trade_team">
+                                                                <div className="trade_team_logo_wrapper">
+                                                                    <img
+                                                                        src={`/logos/nfl/${tradePartner.name.toLowerCase()}.png`}
+                                                                        alt={tradePartner.name}
+                                                                        className="trade_team_logo"
+                                                                    />
+                                                                </div>
+
+                                                                <div className="trade_team_name">
+                                                                    {tradePartner.name}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="trade_picks">
+                                                                {picks.filter(pick => pick.team.id === tradePartner.id && !pick.player).map(pick => (
+                                                                    <button
+                                                                        key={pick.id}
+                                                                        className={`trade_pick_btn ${tradedPicks.tradePartner.includes(pick.id) ? "selected" : ""}`}
+                                                                        onClick={() => togglePickSelection("tradePartner", pick.id)}
+                                                                    >
+                                                                        {pick.draft_pick.round}.{pick.draft_pick.pick_number}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {tradeEvaluation && (
+                                                <div className="trade_evaluation">
+                                                    <div
+                                                        className={`trade_evaluation_bar ${tradeEvaluation.verdict.toLowerCase()}`}
+                                                        style={{
+                                                            transform: tradeEvaluation.verdict === "Fair" ? "translateX(0)" : tradeEvaluation.team1Total > tradeEvaluation.team2Total ? `translateX(${tradeEvaluation.percentDifference}%)` : `translateX(${-tradeEvaluation.percentDifference}%)`
+                                                        }}
+                                                        title={`Trade Verdict: ${tradeEvaluation.verdict}`}
+                                                    >
+                                                        {tradeEvaluation.verdict}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="trade_modal_buttons">
+                                                <button className="trade_modal_btn submit" onClick={submitTrade}>
+                                                    Submit Trade
+                                                </button>
+                                                <button className="trade_modal_btn cancel" onClick={() => {
+                                                    setShowTradeModal(false);
+                                                    setPaused(false);
+                                                }}>
+                                                    Cancel Trade
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {showConfirmRestartModal && (
+                                    <div className="confirm_restart_modal">
+                                        <div className="confirm_restart_modal_content">
+                                            <p className="confirm_restart_modal_message">
+                                                Restart draft?
+                                            </p>
+                                            
+                                            <div className="confirm_restart_modal_buttons">
+                                                <button className="confirm_restart_modal_btn confirm" onClick={confirmRestartDraft}>
+                                                    Yes
+                                                </button>
+                                                <button className="confirm_restart_modal_btn cancel" onClick={() => setShowConfirmRestartModal(false)}>
+                                                    No
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="draft_details">
+                                    <h3>
+                                        Details
+                                    </h3>
+                                    <br />
+                                    <p>
+                                        <strong>Name</strong>
+                                    </p>
+                                    <p>
+                                        {draft.name}
+                                    </p>
+                                    <br />
+                                    <p>
+                                        <strong>Year</strong>
+                                    </p>
+                                    <p>
+                                        {draft.year}
+                                    </p>
+                                    <br />
+                                    <p>
+                                        <strong>Rounds</strong>
+                                    </p>
+                                    <p>
+                                        {draft.num_rounds}
+                                    </p>
+                                    <br />
+
+                                    <div className="auto_pick_speed_wrapper">
+                                        <label className="auto_pick_speed_label">
+                                            Pick Speed
+                                        </label>
+                                        <div className="auto_pick_speed_slider_container">
+                                            <input
+                                                className="auto_pick_speed_slider"
+                                                type="range"
+                                                min={200}
+                                                max={5000}
+                                                step={100}
+                                                value={5200 - autoPickDelay}
+                                                onChange={(e) => setAutoPickDelay(5200 - parseInt(e.target.value))}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        className={`mute_btn_wrapper ${soundsMuted ? "muted" : "unmuted"}`}
+                                        onClick={() => setSoundsMuted(prev => !prev)}
+                                    >
+                                        <img
+                                            src={soundsMuted ? "/site/unmute.svg" : "/site/mute.svg"}
+                                            alt={soundsMuted ? "Unmute" : "Mute"}
+                                            className="mute_btn"
+                                        />
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {showConfirmRestartModal && (
-                        <div className="confirm_restart_modal">
-                            <div className="confirm_restart_modal_content">
-                                <p className="confirm_restart_modal_message">
-                                    Restart draft?
-                                </p>
-                                
-                                <div className="confirm_restart_modal_buttons">
-                                    <button className="confirm_restart_modal_btn confirm" onClick={confirmRestartDraft}>
-                                        Yes
-                                    </button>
-                                    <button className="confirm_restart_modal_btn cancel" onClick={() => setShowConfirmRestartModal(false)}>
-                                        No
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="draft_details">
-                        <h3>
-                            Details
-                        </h3>
-                        <br />
-                        <p>
-                            <strong>Name</strong>
-                        </p>
-                        <p>
-                            {draft.name}
-                        </p>
-                        <br />
-                        <p>
-                            <strong>Year</strong>
-                        </p>
-                        <p>
-                            {draft.year}
-                        </p>
-                        <br />
-                        <p>
-                            <strong>Rounds</strong>
-                        </p>
-                        <p>
-                            {draft.num_rounds}
-                        </p>
-                        <br />
-
-                        <div className="auto_pick_speed_wrapper">
-                            <label className="auto_pick_speed_label">
-                                Pick Speed
-                            </label>
-                            <input
-                                className="auto_pick_speed_slider"
-                                type="range"
-                                min={200}
-                                max={5000}
-                                step={100}
-                                value={5200 - autoPickDelay} onChange={(e) => setAutoPickDelay(5200 - parseInt(e.target.value))}
-                            />
-                        </div>
-
-                        <button
-                            className={`mute_btn_wrapper ${soundsMuted ? "muted" : "unmuted"}`}
-                            onClick={() => setSoundsMuted(prev => !prev)}
-                        >
-                            <img
-                                src={soundsMuted ? "/site/unmute.svg" : "/site/mute.svg"}
-                                alt={soundsMuted ? "Unmute" : "Mute"}
-                                className="mute_btn"
-                            />
-                        </button>
+                            </>
+                        )}
                     </div>
                 </aside>
 
                 <section className="big_board">
                     <div className="big_board_header">
-                        {isUserTurn && (
-                            <div className={`pick_timer ${timeLeft <= 10 ? "urgent" : ""}`}>
-                                <span>
-                                    {timeLeft}s
-                                </span>
-                            </div>
-                        )}
-
                         <div className="big_board_left">
                             <Select
                                 className="position_filter"
@@ -988,17 +1067,19 @@ function Draft() {
                         </div>
 
                         <div className="big_board_right">
-                            <input
-                                type="text"
-                                placeholder={isSearchFocused || isSearchHovered ? "Search players by name" : "Search"}
-                                className="player_search_input"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onFocus={() => setIsSearchFocused(true)}
-                                onBlur={() => setIsSearchFocused(false)}
-                                onMouseEnter={() => setIsSearchHovered(true)}
-                                onMouseLeave={() => setIsSearchHovered(false)}
-                            />
+                            <div className="player_search_wrapper">
+                                <input
+                                    type="text"
+                                    placeholder={isSearchFocused || isSearchHovered ? "Search players by name" : "Search"}
+                                    className="player_search_input"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => setIsSearchFocused(true)}
+                                    onBlur={() => setIsSearchFocused(false)}
+                                    onMouseEnter={() => setIsSearchHovered(true)}
+                                    onMouseLeave={() => setIsSearchHovered(false)}
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -1028,12 +1109,14 @@ function Draft() {
                                         </span>
                                     </div>
 
-                                    <div className="player_position">
-                                        {player.position}
-                                    </div>
+                                    <div className="player_label">
+                                        <small className="player_position">
+                                            {player.position}
+                                        </small>
 
-                                    <div className="player_rank">
-                                        <small>{player.rank}</small>
+                                        <small className="player_rank">
+                                            {player.rank}
+                                        </small>
                                     </div>
 
                                     <div className="select_player">
@@ -1142,6 +1225,7 @@ function Draft() {
                                     ))}
                                 </div>
                             </div>
+                            <div className="team_picks_list_spacer"></div>
                         </div>
                     ) : (
                         <div className="team_loading_message">
