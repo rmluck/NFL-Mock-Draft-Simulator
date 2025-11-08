@@ -1969,6 +1969,7 @@ color: var(--white);
 
   .draft_tools_header {
     display: flex;
+    padding: 12px 0 6px 0;
   }
 
   .draft_tools.collapsed > :not(.draft_tools_header) {
@@ -2665,6 +2666,7 @@ color: var(--white);
   right: 0px;
   display: flex;
   z-index: 5;
+  height: 35px;
   width: 200px;
   padding: 0;
   background-color: var(--light-orange);
@@ -2711,6 +2713,7 @@ color: var(--white);
   align-items: center;
   gap: 18px;
   z-index: 5;
+  height: 35px;
   width: 230px;
   padding: 0;
   background-color: var(--yellow);
@@ -2865,11 +2868,6 @@ color: var(--white);
     gap: 1px;
   }
 
-  .view_toggle {
-    width: 150px;
-    box-shadow: 2px 2px 0 var(--black);
-  }
-
   .switch_option {
     padding: 12px 14px;
     font-size: 0.9rem;
@@ -2943,6 +2941,7 @@ color: var(--white);
 
   .view_toggle {
     width: 120px;
+    box-shadow: 2px 2px 0 var(--black);
   }
 
   .switch_option {
