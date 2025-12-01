@@ -3,6 +3,7 @@ name: Keep Backend and Database Alive
 on:
     schedule:
         - cron: "*/10 * * * *"  # Runs every 10 minutes
+    workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
     ping-backend-and-database:
