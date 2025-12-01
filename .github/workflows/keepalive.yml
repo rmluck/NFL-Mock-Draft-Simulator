@@ -1,12 +1,17 @@
-name: Keep Backend Alive
+name: Keep Backend and Database Alive
 
 on:
     schedule:
         - cron: "*/10 * * * *"  # Runs every 10 minutes
 
 jobs:
-    ping-backend:
+    ping-backend-and-database:
         runs-on: ubuntu-latest
         steps:
             - name: Ping backend
               run: curl -s https://nfl-mock-draft-simulator.onrender.com/ > /dev/null
+            
+            - name: Ping Supabase database
+              run: |
+                curl -s '${{ secrets.SUPABASE_URL }}/rest/v1/teams?select=id&limit=1' \
+                  -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" > /dev/null
